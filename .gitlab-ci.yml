@@ -1,0 +1,9 @@
+image: frekele/gradle
+
+gradle-build:
+  stage: build
+  script: "gradle clean build"
+  artifacts:
+    paths:
+      - build/libs/*.jar
+      - build/distributions/
