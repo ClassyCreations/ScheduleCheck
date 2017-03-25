@@ -29,6 +29,9 @@ public class ScheduleCheck {
 	
 	@Parameter(names = {"--debug", "-d"})
 	private boolean debug = false;
+	
+	@Parameter(names = {"--quiet", "-q"})
+	private boolean quiet = false;
   
 	public static void main(String[] args){
 		ScheduleCheck scheduleCheck = new ScheduleCheck();
@@ -37,23 +40,35 @@ public class ScheduleCheck {
 	}
 	
 	private void actuallyMain(String[] args){
-		getLoginDetails();
 		try {
-			loginResponse();
+			getLoginDetails();
+			loginResponse(username, password);
 			Document schedPage = schedulePage().parse();
-			System.out.println("Day: " + getDay(schedPage));
-			System.out.println("Class: " + getClass(schedPage));
+			
+			int day = getDay(schedPage);
+			String className = getClass(schedPage);
+			Character block = getBlock(schedPage);
+			
+			if (className == null) className = "No Class in Session!";
+			
+			if (quiet) {
+				System.out.println(day);
+				System.exit(day);
+			} else {
+				System.out.println("Day: " + day);
+				System.out.println("Class: " + className);
+				if (block != null) System.out.println("Block: " + block);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void getLoginDetails(){
+
+	public void getLoginDetails() throws IOException{
 		if (username == null || password == null) {
 			File credsFile = new File(System.getProperty("user.dir") + "creds.txt");
 			if (credsFile.canRead()) {
 				if (debug) System.out.println("Using credentials file: " + credsFile.getPath());
-				try {
 					List<String> lines = Files.readAllLines(credsFile.toPath());
 					if (lines.get(0) != null && username == null) {
 						username = lines.get(0);
@@ -61,9 +76,6 @@ public class ScheduleCheck {
 					if (lines.get(1) != null && password == null) {
 						password = lines.get(1);
 					}
-				} catch (IOException e) {
-					return;
-				}
 			}
 		}
 	}
@@ -87,8 +99,15 @@ public class ScheduleCheck {
 		try {
 			return matching.get(1).text();
 		} catch (IndexOutOfBoundsException e){
-			return "No Class Currently";
+			return null;
 		}
+	}
+	
+	public Character getBlock(Document schedPage){
+		String currentClass = getClass(schedPage);
+		if (currentClass == null) return null;
+		// Handles special block ID codes
+		return currentClass.substring(currentClass.lastIndexOf(" "), currentClass.length()).charAt(0);
 	}
 	
 	public Connection.Response schedulePage() throws IOException{
@@ -103,12 +122,11 @@ public class ScheduleCheck {
 		} catch (HttpStatusException e){
 			System.out.println("Login details incorrect, or Aspen is having issues, please try again later!");
 			if (debug) e.printStackTrace();
+			return null;
 		}
-		System.out.println("You shouldn't be here...");
-		return null;
 	}
 	
-	public Connection.Response loginResponse() throws IOException {
+	public Connection.Response loginResponse(String username, String password) throws IOException {
 		String loginUrl = "https://ma-melrose.myfollett.com/aspen/logon.do";
 			Connection.Response loginPageResponse =
 							Jsoup.connect(loginUrl)
