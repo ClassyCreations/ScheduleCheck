@@ -26,7 +26,7 @@ function getSched(){
 function runAspenJar(){
     global $jarName;
 
-    exec("java -jar $jarName -q -j -f sched.txt -u " . getenv("ASPEN_UNAME") . " -p " . getenv("ASPEN_PASS"), $output);
+    exec("java -jar $jarName -q -j -f sched.txt -u " . getenv("ASPEN_UNAME") . " -p " . getenv("ASPEN_PASS") . " &", $output);
     error_log(implode(",", $output));
 }
 
