@@ -28,10 +28,16 @@ function runAspenJar(){
 function buildAndCopyJar(){
     global $jarName;
 
-    if (!file_exists("./$jarName") && file_exists("build.gradle")){
-        exec("./gradlew build");
-        if (copy("build/libs/$jarName", "./$jarName")){
+    if (!file_exists("./$jarName") && file_exists("build/libs/$jarName")) {
+        if (copy("build/libs/$jarName", "./$jarName")) {
             error_log("Unable to copy and build jar!");
+        }
+    } else {
+        if (file_exists("build.gradle")) {
+            exec("./gradlew build");
+            if (copy("build/libs/$jarName", "./$jarName")) {
+                error_log("Unable to copy and build jar!");
+            }
         }
     }
 }
