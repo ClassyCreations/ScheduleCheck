@@ -7,16 +7,20 @@ function main(){
     buildAndCopyJar();
     if (!file_exists($schedName)) runAspenJar();
 
-    $handle = fopen($schedName, "r");
-    $contents = fread($handle, filesize($schedName));
-    fclose($handle);
-
-    $json = json_decode($contents);
+    $json = json_decode(getSched());
     if (time() - $json->{'asOf'} > 120) {
         runAspenJar();
     }
 
-    echo $contents;
+    echo getSched();
+}
+
+function getSched(){
+    global $schedName;
+    $handle = fopen($schedName, "r");
+    $contents = fread($handle, filesize($schedName));
+    fclose($handle);
+    return $contents;
 }
 
 function runAspenJar(){
