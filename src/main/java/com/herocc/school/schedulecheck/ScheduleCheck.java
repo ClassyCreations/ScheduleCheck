@@ -30,7 +30,7 @@ public class ScheduleCheck {
 	@Parameter(names = {"--username", "-u"}, description = "Aspen Username")
 	private String username;
 	
-	@Parameter(names = {"--password", "-p"}, description = "Aspen password", password = true)
+	@Parameter(names = {"--password", "-p"}, description = "Aspen password")
 	private String password;
 	
 	@Parameter(names = {"--debug", "-d"})
@@ -64,6 +64,7 @@ public class ScheduleCheck {
 			day = getDay(schedPage);
 			className = getClass(schedPage);
 			block = getBlock(schedPage);
+			if (block == null) block = "Z";
 			
 			if (className == null) className = "No Class in Session!";
 			
@@ -174,8 +175,8 @@ public class ScheduleCheck {
 			return m.group(0);
 		} else {
 			if (!quiet && debug) System.out.println("No block found!");
+			return null;
 		}
-		return null;
 	}
 	
 	public Connection.Response schedulePage() throws IOException{
