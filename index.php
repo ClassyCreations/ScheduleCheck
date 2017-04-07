@@ -41,10 +41,10 @@ function runAspenJar($username, $pass, $file, $async){
     global $jarName;
 
     $command = "java -jar $jarName -j -f $file -u $username -p $pass";
-    if ($async == true && !strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
+    if ($async == true && !defined('PHP_WINDOWS_VERSION_MAJOR')){
         return exec($command . " &> /dev/null &");
     } else {
-        return exec($command);
+        return exec($command . " --hidePrivateData");
     }
 }
 

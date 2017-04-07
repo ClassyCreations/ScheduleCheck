@@ -24,8 +24,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ScheduleCheck {
-	public String agent = "ScheduleGrab Bot";
-	public Map<String, String> demCookies = new HashMap<>();
+	private String agent = "ScheduleGrab Bot";
+	private Map<String, String> demCookies = new HashMap<>();
 	
 	@Parameter(names = {"--username", "-u"}, description = "Aspen Username")
 	private String username;
@@ -40,10 +40,13 @@ public class ScheduleCheck {
 	private boolean quiet = false;
 	
 	@Parameter(names = {"--file", "-f"})
-	private String filePath;
+	private String filePath = null;
 	
 	@Parameter(names = {"--printJson", "-j"})
 	private boolean printJson = false;
+	
+	@Parameter(names = {"--hidePrivateData"})
+	private boolean hidePrivateData = true;
 	
 	private int day;
 	private String className;
@@ -65,7 +68,6 @@ public class ScheduleCheck {
 			className = getClass(schedPage);
 			block = getBlock(schedPage);
 			if (block == null) block = "Z";
-			
 			if (className == null) className = "No Class in Session!";
 			
 			if (quiet && !printJson) {
@@ -83,12 +85,14 @@ public class ScheduleCheck {
 	}
 	
 	public JsonObject getJsonData(){
+		String localClassName = hidePrivateData ? "null" : className;
+		
 		return Json.createObjectBuilder()
 						.add("version", 1) // Increment as JSON data changes
 						.add("day", day)
 						.add("block", block)
 						.add("asOf", Instant.now().getEpochSecond())
-						.add("class", "null") // TODO Get Class based on user params
+						.add("class", localClassName)
 						.build();
 	}
 	
