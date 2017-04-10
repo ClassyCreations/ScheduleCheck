@@ -3,19 +3,25 @@ $schedName = "sched.txt";
 $jarName = "ScheduleCheck-1.0-SNAPSHOT.jar";
 function main(){
     global $schedName;
-
     buildAndCopyJar();
-    if (!file_exists($schedName)) runAspenJar();
 
-    $json = json_decode(getSched());
-    if (time() - $json->{'asOf'} > 120) {
-        runAspenJar();
+    $uname = $_POST['username'];
+    $pass = $_POST['password'];
+
+    $json = json_decode(getCachedSched());
+    if (!$uname == null && !$pass == null){
+        echo runAspenJar($uname, $pass, "/dev/null", false);
+    } else if (time() - $json->{'asOf'} > 120) {
+        runAspenJar(getenv('ASPEN_UNAME'), getenv('ASPEN_PASS'), $schedName, true); // Schedule File refresh
+        echo getCachedSched();
+    } else {
+        echo getCachedSched();
     }
 
-    echo getSched();
+
 }
 
-function getSched(){
+function getCachedSched(){
     global $schedName;
     $handle = fopen($schedName, "r");
     $contents = fread($handle, filesize($schedName));
@@ -23,11 +29,23 @@ function getSched(){
     return $contents;
 }
 
-function runAspenJar(){
+/**
+ *
+ * @param $username String Aspen Username
+ * @param $pass String Aspen Password
+ * @param $file String File path to output to
+ * @param $async Boolean Run async (without output)
+ * @return mixed
+ */
+function runAspenJar($username, $pass, $file, $async){
     global $jarName;
 
-    exec("java -jar $jarName -q -j -f sched.txt -u " . getenv("ASPEN_UNAME") . " -p " . getenv("ASPEN_PASS"), $output);
-    error_log(implode(",", $output));
+    $command = "java -jar $jarName -j -f $file -u $username -p $pass";
+    if ($async == true && !defined('PHP_WINDOWS_VERSION_MAJOR')){
+        return exec($command . " &> /dev/null &");
+    } else {
+        return exec($command . " --hidePrivateData");
+    }
 }
 
 function buildAndCopyJar(){
