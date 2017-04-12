@@ -12,8 +12,8 @@ function main(){
     if (!$uname == null && !$pass == null){
         echo runAspenJar($uname, $pass, "/dev/null", false);
     } else if (time() - $json->{'asOf'} > 120) {
-        runAspenJar(getenv('ASPEN_UNAME'), getenv('ASPEN_PASS'), $schedName, true); // Schedule File refresh
         echo getCachedSched();
+        runAspenJar(getenv('ASPEN_UNAME'), getenv('ASPEN_PASS'), $schedName, true); // Schedule File refresh
     } else {
         echo getCachedSched();
     }
