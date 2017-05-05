@@ -1,6 +1,11 @@
 <?php
 $schedName = "sched.txt";
 $jarName = "ScheduleCheck-1.0-SNAPSHOT.jar";
+
+header('Cache-Control: no-cache, must-revalidate'); // No Cache
+header('Content-type: application/json'); // JSON Type
+header('Access-Control-Allow-Origin: *'); // Allow scripts to call me
+
 function main(){
     global $schedName;
     buildAndCopyJar();
