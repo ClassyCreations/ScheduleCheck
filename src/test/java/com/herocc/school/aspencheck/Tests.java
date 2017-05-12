@@ -1,4 +1,4 @@
-package com.herocc.school.schedulecheck;
+package com.herocc.school.aspencheck;
 
 import org.junit.Test;
 
