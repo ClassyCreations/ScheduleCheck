@@ -64,9 +64,12 @@ public class Schedule {
 	}
 	
 	private int getBlockOfDay(){
-		return Integer.valueOf(String.valueOf(
+		Integer targetInt = Integer.valueOf(String.valueOf(
 						schedPage.body().getElementsByAttributeValueContaining("style", "border: solid 1px red;")
 						.get(1).parent().getElementsByAttributeValueContaining("width", "5%").get(0).text().charAt(0)));
+		
+		if (targetInt == null) return 6;
+		return targetInt;
 	}
 	
 	public JsonObjectBuilder getJsonData(boolean sensorPrivateInformation){
