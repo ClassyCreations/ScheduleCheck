@@ -65,7 +65,6 @@ public class AspenCheck {
 			int day = schedule.day;
 			String className = schedule.currentClass;
 			String block = schedule.block;
-			if (block == null) block = "Z";
 			if (className == null) className = "No Class in Session!";
 			
 			if (quiet && !printJson) {

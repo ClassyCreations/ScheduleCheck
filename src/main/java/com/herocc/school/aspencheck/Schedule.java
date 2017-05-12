@@ -56,20 +56,20 @@ public class Schedule {
 	
 	private String getBlock(){
 		String currentClass = this.getCurrentClass();
-		if (currentClass == null) return null;
+		if (currentClass == null) return "Z";
 		String gotBlock = currentClass.replaceAll("\\d","");
 		gotBlock = gotBlock.substring(gotBlock.length() - 1);
 		if (Pattern.matches("[A-G]", gotBlock)) return gotBlock;
-		return null;
+		return "Z";
 	}
 	
 	private int getBlockOfDay(){
-		Integer targetInt = Integer.valueOf(String.valueOf(
-						schedPage.body().getElementsByAttributeValueContaining("style", "border: solid 1px red;")
-						.get(1).parent().getElementsByAttributeValueContaining("width", "5%").get(0).text().charAt(0)));
-		
-		if (targetInt == null) return 6;
-		return targetInt;
+		try {
+			return Integer.valueOf(String.valueOf(schedPage.body().getElementsByAttributeValueContaining("style", "border: solid 1px red;")
+											.get(1).parent().getElementsByAttributeValueContaining("width", "5%").get(0).text().charAt(0)));
+		} catch (IndexOutOfBoundsException e){
+			return 6;
+		}
 	}
 	
 	public JsonObjectBuilder getJsonData(boolean sensorPrivateInformation){
