@@ -1,4 +1,4 @@
-package com.herocc.school.aspencheck;
+package com.herocc.school.aspencheck.aspen;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;

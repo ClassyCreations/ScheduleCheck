@@ -2,14 +2,10 @@ package com.herocc.school.aspencheck;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import org.jsoup.Connection;
-import org.jsoup.HttpStatusException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import com.herocc.school.aspencheck.aspen.AspenWebFetch;
+import com.herocc.school.aspencheck.aspen.Schedule;
 
 import javax.json.Json;
-import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
 import java.io.File;
@@ -18,11 +14,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class AspenCheck {
 	
@@ -33,10 +25,10 @@ public class AspenCheck {
 	private String password;
 	
 	@Parameter(names = {"--debug", "-d"})
-	static boolean debug = false;
+	public static boolean debug = false;
 	
 	@Parameter(names = {"--quiet", "-q"})
-	static boolean quiet = false;
+	public static boolean quiet = false;
 	
 	@Parameter(names = {"--file", "-f"})
 	private String filePath = null;
@@ -58,9 +50,9 @@ public class AspenCheck {
 	private void actuallyMain(String[] args){
 		try {
 			getLoginDetails();
-			WebFetch webFetch = new WebFetch();
-			webFetch.login(username, password);
-			schedule = new Schedule(webFetch.schedulePage().parse());
+			AspenWebFetch aspenWebFetch = new AspenWebFetch();
+			aspenWebFetch.login(username, password);
+			schedule = new Schedule(aspenWebFetch.schedulePage().parse());
 			
 			int day = schedule.day;
 			String className = schedule.currentClass;

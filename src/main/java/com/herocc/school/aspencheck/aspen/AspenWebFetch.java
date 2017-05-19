@@ -1,5 +1,6 @@
-package com.herocc.school.aspencheck;
+package com.herocc.school.aspencheck.aspen;
 
+import com.herocc.school.aspencheck.AspenCheck;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -8,7 +9,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WebFetch {
+public class AspenWebFetch {
 	private String agent = "ScheduleGrab Bot";
 	private Map<String, String> demCookies = new HashMap<>();
 	
