@@ -41,7 +41,7 @@ public class Calendar {
 	
 	public JsonObjectBuilder getJsonData(){
 		return Json.createObjectBuilder()
-						.add("isNalfDay", isHalfDay)
+						.add("isHalfDay", isHalfDay)
 						.add("isNoSchool", isNoSchool);
 	}
 }
