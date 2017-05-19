@@ -4,6 +4,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
 import com.herocc.school.aspencheck.aspen.Schedule;
+import com.herocc.school.aspencheck.calendar.CalWebFetch;
+import com.herocc.school.aspencheck.calendar.Calendar;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -40,6 +42,7 @@ public class AspenCheck {
 	private boolean hidePrivateData = true;
 	
 	Schedule schedule;
+	Calendar calendar;
 	
 	public static void main(String[] args){
 		AspenCheck aspenCheck = new AspenCheck();
@@ -53,6 +56,9 @@ public class AspenCheck {
 			AspenWebFetch aspenWebFetch = new AspenWebFetch();
 			aspenWebFetch.login(username, password);
 			schedule = new Schedule(aspenWebFetch.schedulePage().parse());
+			
+			CalWebFetch calWebFetch = new CalWebFetch();
+			calendar = new Calendar(calWebFetch.todayPage().parse());
 			
 			int day = schedule.day;
 			String className = schedule.currentClass;
@@ -77,10 +83,11 @@ public class AspenCheck {
 	
 	public JsonObjectBuilder jsonData(){
 		JsonObjectBuilder json = Json.createObjectBuilder();
-		JsonObjectBuilder scheduleJson = schedule.getJsonData(hidePrivateData);
+
 		json = json.add("version", 2) // Increment as JSON data changes
 						.add("asOf", Instant.now().getEpochSecond())
-						.add("schedule", scheduleJson); // Schedule Data
+						.add("schedule", schedule.getJsonData(hidePrivateData)) // Schedule Data
+						.add("calendar", calendar.getJsonData()); // Calendar Data
 		
 		return json;
 	}
