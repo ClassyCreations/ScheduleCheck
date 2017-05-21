@@ -1,13 +1,19 @@
 package com.herocc.school.aspencheck.calendar;
 
+import com.sun.javafx.binding.StringFormatter;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 public class Calendar {
@@ -15,12 +21,23 @@ public class Calendar {
 	
 	public boolean isHalfDay;
 	public boolean isNoSchool;
+	public ArrayList<String> events;
 	
 	public Calendar(Document cal){
 		this.cal = cal;
 		
+		this.events = getEvents();
 		this.isHalfDay = isHalfDay();
 		this.isNoSchool = isNoSchool();
+	}
+	
+	private ArrayList<String> getEvents() {
+		Elements matching = cal.body().getElementsByAttributeValueContaining("class", "tribe-events-list-event-title");
+		ArrayList<String> events = new ArrayList<>();
+		for (Element match : matching){
+			events.add(match.text());
+		}
+		return events;
 	}
 	
 	private boolean isHalfDay() {
@@ -40,8 +57,13 @@ public class Calendar {
 	}
 	
 	public JsonObjectBuilder getJsonData(){
+		JsonArrayBuilder jsonEvents = Json.createArrayBuilder();
+		for (String eventName : events){
+			jsonEvents.add(eventName);
+		}
 		return Json.createObjectBuilder()
 						.add("isHalfDay", isHalfDay)
-						.add("isNoSchool", isNoSchool);
+						.add("isNoSchool", isNoSchool)
+						.add("events", jsonEvents);
 	}
 }
