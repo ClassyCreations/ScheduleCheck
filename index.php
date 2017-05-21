@@ -1,6 +1,6 @@
 <?php
 $schedName = "sched.txt";
-$jarName = "ScheduleCheck-1.2-SNAPSHOT.jar";
+$jarName = "ScheduleCheck-1.3-SNAPSHOT.jar";
 
 header('Cache-Control: no-cache, must-revalidate'); // No Cache
 header('Content-type: application/json'); // JSON Type
