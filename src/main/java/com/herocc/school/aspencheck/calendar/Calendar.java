@@ -1,5 +1,6 @@
 package com.herocc.school.aspencheck.calendar;
 
+import com.herocc.school.aspencheck.AspenCheck;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -32,7 +33,7 @@ public class Calendar {
 		Elements matching = cal.body().getElementsByAttributeValueContaining("class", "tribe-events-list-event-title");
 		ArrayList<String> events = new ArrayList<>();
 		for (Element match : matching){
-			events.add(match.text());
+			if (!match.text().equals("Day " + AspenCheck.day)) events.add(match.text()); // Don't add events matching the Day
 		}
 		return events;
 	}

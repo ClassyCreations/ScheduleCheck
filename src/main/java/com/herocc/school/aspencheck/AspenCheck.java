@@ -44,6 +44,10 @@ public class AspenCheck {
 	Schedule schedule;
 	Calendar calendar;
 	
+	public static int day;
+	public static String className;
+	public static String block;
+	
 	public static void main(String[] args){
 		AspenCheck aspenCheck = new AspenCheck();
 		new JCommander(aspenCheck, args);
@@ -56,13 +60,13 @@ public class AspenCheck {
 			AspenWebFetch aspenWebFetch = new AspenWebFetch();
 			aspenWebFetch.login(username, password);
 			schedule = new Schedule(aspenWebFetch.schedulePage().parse());
+			day = schedule.day;
+			className = schedule.currentClass;
+			block = schedule.block;
 			
 			CalWebFetch calWebFetch = new CalWebFetch();
 			calendar = new Calendar(calWebFetch.todayPage().parse());
 			
-			int day = schedule.day;
-			String className = schedule.currentClass;
-			String block = schedule.block;
 			if (className == null) className = "No Class in Session!";
 			
 			if (quiet && !printJson) {

@@ -10,7 +10,7 @@ import java.io.IOException;
 public class CalWebFetch extends GenericWebFetch {
 	public Connection.Response todayPage() throws IOException {
 		try {
-			return getPage("https://melroseschools.com/calendar/today/?tribe_eventcategory=144");
+			return getPage("https://melroseschools.com/calendar/today/?tribe_eventcategory=149");
 		} catch (HttpStatusException e){
 			if (AspenCheck.debug && !AspenCheck.quiet) e.printStackTrace();
 			return null;
