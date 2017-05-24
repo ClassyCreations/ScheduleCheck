@@ -1,10 +1,13 @@
 package com.herocc.school.aspencheck.aspen;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import javax.json.Json;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +18,7 @@ public class Schedule {
 	public String currentClass;
 	public String block;
 	public int blockOfDay;
+	public ArrayList<String> blockOrder;
 	
 	public Schedule(Document schedPage){
 		this.schedPage = schedPage;
@@ -22,6 +26,7 @@ public class Schedule {
 		this.currentClass = getCurrentClass();
 		this.block = getBlock();
 		this.blockOfDay = getBlockOfDay();
+		this.blockOrder = getDaySchedule();
 	}
 	
 	private int getDay() {
@@ -70,13 +75,32 @@ public class Schedule {
 		}
 	}
 	
+	private ArrayList<String> getDaySchedule(){
+		ArrayList<String> blocks = new ArrayList<>();
+		
+		Elements trs = schedPage.body().getElementsByAttributeValueContaining("class", "listHeader headerLabelBackground")
+						.first().siblingElements();
+		
+		for (Element tr : trs) {
+			blocks.add(String.valueOf(tr.children().get(day)
+							.getElementsByAttributeValueContaining("style", "font-weight: bold")
+							.text().charAt(0)));
+		}
+		return blocks;
+	}
+	
 	public JsonObjectBuilder getJsonData(boolean sensorPrivateInformation){
 		String localClassName = sensorPrivateInformation ? "null" : this.currentClass;
+		JsonArrayBuilder jsonBlocks = Json.createArrayBuilder();
+		for (String eventName : blockOrder){
+			jsonBlocks.add(eventName);
+		}
 		
 		return Json.createObjectBuilder()
 						.add("day", this.day)
 						.add("block", this.block)
 						.add("blockOfDay", this.blockOfDay)
-						.add("class", localClassName);
+						.add("class", localClassName)
+						.add("blockSchedule", jsonBlocks);
 	}
 }
