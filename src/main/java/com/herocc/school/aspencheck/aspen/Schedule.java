@@ -16,6 +16,7 @@ public class Schedule {
 	
 	public int day;
 	public String currentClass;
+	public boolean classInSession;
 	public String block;
 	public int blockOfDay;
 	public ArrayList<String> blockOrder;
@@ -24,6 +25,7 @@ public class Schedule {
 		this.schedPage = schedPage;
 		this.day = getDay();
 		this.currentClass = getCurrentClass();
+		this.classInSession = isClassInSession();
 		this.block = getBlock();
 		this.blockOfDay = getBlockOfDay();
 		this.blockOrder = getDaySchedule();
@@ -89,6 +91,10 @@ public class Schedule {
 		return blocks;
 	}
 	
+	private boolean isClassInSession() {
+		return currentClass != null;
+	}
+	
 	public JsonObjectBuilder getJsonData(boolean sensorPrivateInformation){
 		String localClassName = sensorPrivateInformation ? "null" : this.currentClass;
 		JsonArrayBuilder jsonBlocks = Json.createArrayBuilder();
@@ -101,6 +107,7 @@ public class Schedule {
 						.add("block", this.block)
 						.add("blockOfDay", this.blockOfDay)
 						.add("class", localClassName)
+						.add("isClassInSession", this.classInSession)
 						.add("blockSchedule", jsonBlocks);
 	}
 }
