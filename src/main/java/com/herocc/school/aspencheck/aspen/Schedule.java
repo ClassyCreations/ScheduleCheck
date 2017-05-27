@@ -85,9 +85,8 @@ public class Schedule {
 						.first().siblingElements();
 		
 		for (Element tr : trs) {
-			blocks.add(String.valueOf(tr.children().get(day)
-							.getElementsByAttributeValueContaining("style", "font-weight: bold")
-							.text().charAt(0)));
+			String text = tr.children().get(day).getElementsByAttributeValueContaining("style", "font-weight: bold").text();
+			if (!text.isEmpty()) blocks.add(String.valueOf(text.charAt(0)));
 		}
 		return blocks;
 	}
