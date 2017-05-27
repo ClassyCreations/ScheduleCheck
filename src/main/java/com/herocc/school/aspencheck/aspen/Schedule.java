@@ -79,6 +79,7 @@ public class Schedule {
 	
 	private ArrayList<String> getDaySchedule(){
 		ArrayList<String> blocks = new ArrayList<>();
+		if (day == 0) return blocks;
 		
 		Elements trs = schedPage.body().getElementsByAttributeValueContaining("class", "listHeader headerLabelBackground")
 						.first().siblingElements();
