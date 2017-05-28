@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ScheduleTests {
-	Schedule schedule = new Schedule(Jsoup.parse(this.getClass().getClassLoader().getResourceAsStream("AspenSchedule.html"), "UTF-8", ""));
+	private Schedule schedule = new Schedule(Jsoup.parse(this.getClass().getClassLoader().getResourceAsStream("AspenSchedule.html"), "UTF-8", ""));
 	
 	public ScheduleTests() throws IOException {}
 	

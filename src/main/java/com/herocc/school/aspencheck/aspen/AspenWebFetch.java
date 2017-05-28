@@ -15,7 +15,7 @@ public class AspenWebFetch extends GenericWebFetch {
 		try {
 			return getPage("https://ma-melrose.myfollett.com/aspen/studentScheduleContextList.do?navkey=myInfo.sch.list");
 		} catch (HttpStatusException e){
-			if (!AspenCheck.quiet) System.out.println("Login details incorrect, or Aspen is having issues, please try again later!");
+			AspenCheck.log.severe("Login details incorrect, or Aspen is having issues, please try again later!");
 			return null;
 		}
 	}
@@ -29,7 +29,7 @@ public class AspenWebFetch extends GenericWebFetch {
 										.followRedirects(true)
 										.execute();
 		
-		if (AspenCheck.debug && !AspenCheck.quiet) System.out.println("Fetched login page");
+		AspenCheck.log.finer("Fetched login page");
 		
 		Map<String, String> mapLoginPageCookies = loginPageResponse.cookies();
 		Map<String, String> mapParams = new HashMap<>();
@@ -40,7 +40,7 @@ public class AspenWebFetch extends GenericWebFetch {
 		mapParams.put("mobile", "false");
 		
 		if (username == null || password == null){
-			System.out.println("Username or Password not specified!");
+			AspenCheck.log.severe("Username or Password not specified!");
 			System.exit(1);
 		}
 		

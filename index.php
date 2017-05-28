@@ -45,7 +45,7 @@ function getCachedSched(){
 function runAspenJar($username, $pass, $file, $async){
     global $jarName;
 
-    $command = "java -jar $jarName -j -f $file -u $username -p $pass";
+    $command = "java -jar $jarName -f $file -u $username -p $pass";
     if ($async == true && !defined('PHP_WINDOWS_VERSION_MAJOR')){
         return exec($command . " &> /dev/null &");
     } else {

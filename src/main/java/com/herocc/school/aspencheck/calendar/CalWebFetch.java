@@ -12,7 +12,7 @@ public class CalWebFetch extends GenericWebFetch {
 		try {
 			return getPage("https://melroseschools.com/calendar/today/?tribe_eventcategory=149");
 		} catch (HttpStatusException e){
-			if (AspenCheck.debug && !AspenCheck.quiet) e.printStackTrace();
+			AspenCheck.log.fine(e.getMessage());
 			return null;
 		}
 	}

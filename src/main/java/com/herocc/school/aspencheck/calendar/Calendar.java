@@ -33,7 +33,7 @@ public class Calendar {
 		Elements matching = cal.body().getElementsByAttributeValueContaining("class", "tribe-events-list-event-title");
 		ArrayList<String> events = new ArrayList<>();
 		for (Element match : matching){
-			if (!match.text().equals("Day " + AspenCheck.day)) events.add(match.text()); // Don't add events matching the Day
+			if (!match.text().equals("Day " + AspenCheck.schedule.day)) events.add(match.text()); // Don't add events matching the Day
 		}
 		return events;
 	}
