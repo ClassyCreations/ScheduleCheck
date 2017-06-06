@@ -15,12 +15,12 @@ function main(){
 
     $json = json_decode(getCachedSched());
     if (!$uname == null && !$pass == null){
-        echo runAspenJar($uname, $pass, "/dev/null", false);
+        echo(json_encode(runAspenJar($uname, $pass, "/dev/null", false)));
     } else if (time() - $json->{'asOf'} > 120) {
         error_log("Cached time: " . $json->{'asOf'} . " is greater than " . time() . " - 120, refreshing", 0);
-        echo(runAspenJar(getenv('ASPEN_UNAME'), getenv('ASPEN_PASS'), $schedName, true));
+        echo(json_encode(runAspenJar(getenv('ASPEN_UNAME'), getenv('ASPEN_PASS'), $schedName, true)));
     } else {
-        echo getCachedSched();
+        echo(json_encode(getCachedSched()));
     }
 
 
