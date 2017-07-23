@@ -4,8 +4,10 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
 import com.herocc.school.aspencheck.aspen.Schedule;
-import com.herocc.school.aspencheck.calendar.CalWebFetch;
-import com.herocc.school.aspencheck.calendar.Calendar;
+import com.herocc.school.aspencheck.calendar.gcal.GoogleCalFetch;
+import com.herocc.school.aspencheck.calendar.gcal.GoogleCalendar;
+import com.herocc.school.aspencheck.calendar.webcal.CalWebFetch;
+import com.herocc.school.aspencheck.calendar.webcal.WebCalendar;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -39,7 +41,8 @@ public class AspenCheck {
 	private boolean hidePrivateData = true;
 	
 	public static Schedule schedule;
-	public static Calendar calendar;
+	public static WebCalendar calendar;
+	public static GoogleCalendar hsAnnouncements;
 	
 	public static void main(String[] args){
 		AspenCheck aspenCheck = new AspenCheck();
@@ -56,7 +59,10 @@ public class AspenCheck {
 			schedule = new Schedule(aspenWebFetch.schedulePage().parse());
 			
 			CalWebFetch calWebFetch = new CalWebFetch();
-			calendar = new Calendar(calWebFetch.todayPage().parse());
+			calendar = new WebCalendar(calWebFetch.todayPage().parse());
+			
+			GoogleCalFetch gcalFetch = new GoogleCalFetch("melroseschools.com_0iitdti0rfgbgc4un9vf8520bc@group.calendar.google.com");
+			hsAnnouncements = new GoogleCalendar(gcalFetch.getCalendar());
 			
 			System.out.println(jsonData().build().toString());
 			
@@ -70,9 +76,13 @@ public class AspenCheck {
 		JsonObjectBuilder json = Json.createObjectBuilder();
 
 		json = json.add("version", 2) // Increment as JSON data changes
-						.add("asOf", Instant.now().getEpochSecond())
+						.add("asOf", Instant.now().getEpochSecond()) // Current time
 						.add("schedule", schedule.getJsonData(hidePrivateData)) // Schedule Data
-						.add("calendar", calendar.getJsonData()); // Calendar Data
+						.add("calendar", calendar.getJsonData()) // Calendar Data
+						.add("announcements", Json.createObjectBuilder() // Announcements from GCal
+										.add("hs", hsAnnouncements.getJsonData()) // High School Announcements
+										// Possibly separate GCal later for Middle / Other schools?
+						);
 		
 		return json;
 	}

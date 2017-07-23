@@ -1,4 +1,4 @@
-package com.herocc.school.aspencheck.calendar;
+package com.herocc.school.aspencheck.calendar.webcal;
 
 import com.herocc.school.aspencheck.AspenCheck;
 import org.jsoup.nodes.Document;
@@ -14,14 +14,14 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-public class Calendar {
+public class WebCalendar {
 	private Document cal;
 	
 	public boolean isHalfDay;
 	public boolean isNoSchool;
 	public ArrayList<String> events;
 	
-	public Calendar(Document cal){
+	public WebCalendar(Document cal){
 		this.cal = cal;
 		
 		this.events = getEvents();

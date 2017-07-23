@@ -1,4 +1,4 @@
-package com.herocc.school.aspencheck.calendar;
+package com.herocc.school.aspencheck.calendar.webcal;
 
 import com.herocc.school.aspencheck.AspenCheck;
 import com.herocc.school.aspencheck.GenericWebFetch;
