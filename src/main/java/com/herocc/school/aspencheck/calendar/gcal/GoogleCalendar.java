@@ -25,7 +25,7 @@ public class GoogleCalendar {
 		The following is from https://github.com/ical4j/ical4j/wiki/Examples#filtering-events
 		It is kinda gross and triggers IntelliJ, but leave it until iCal4J updates their stuff or I find another fix
 		*/
-		java.util.Calendar today = java.util.Calendar.getInstance();
+		java.util.Calendar today = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("America/New_York"));
 		today.set(java.util.Calendar.HOUR_OF_DAY, 0);
 		today.clear(java.util.Calendar.MINUTE);
 		today.clear(java.util.Calendar.SECOND);
