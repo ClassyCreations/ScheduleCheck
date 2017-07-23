@@ -45,8 +45,7 @@ public class GoogleCalendar {
 		return jsonEvents;
 	}
 	
-	public JsonObjectBuilder getJsonData() {
-		return Json.createObjectBuilder()
-						.add("announcements", getAnnouncements());
+	public JsonArrayBuilder getJsonData() {
+		return getAnnouncements();
 	}
 }
