@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GenericWebFetch {
-	public String agent = "ScheduleGrab Bot";
+	public static String agent = "ScheduleGrab Bot";
 	public Map<String, String> demCookies = new HashMap<>();
 	
 	public Connection.Response getPage(String url) throws IOException {

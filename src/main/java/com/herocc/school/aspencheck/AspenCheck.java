@@ -4,18 +4,17 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
 import com.herocc.school.aspencheck.aspen.Schedule;
-import com.herocc.school.aspencheck.calendar.gcal.GoogleCalFetch;
-import com.herocc.school.aspencheck.calendar.gcal.GoogleCalendar;
-import com.herocc.school.aspencheck.calendar.webcal.CalWebFetch;
-import com.herocc.school.aspencheck.calendar.webcal.WebCalendar;
+import com.herocc.school.aspencheck.calendar.ICalendar;
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Calendar;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.util.List;
@@ -39,30 +38,29 @@ public class AspenCheck {
 	
 	@Parameter(names = {"--hidePrivateData"})
 	private boolean hidePrivateData = true;
+  
+  private String calendarURL = "http://melroseschools.com/calendar/today/?ical=1&tribe_display=day&tribe_eventcategory=149";
+  private String announcementsURL = "https://calendar.google.com/calendar/ical/melroseschools.com_0iitdti0rfgbgc4un9vf8520bc@group.calendar.google.com/public/full.ics";
 	
 	public static Schedule schedule;
-	public static WebCalendar calendar;
-	public static GoogleCalendar hsAnnouncements;
+	public static ICalendar calendar;
+	public static ICalendar hsAnnouncements;
 	
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		AspenCheck aspenCheck = new AspenCheck();
 		new JCommander(aspenCheck, args);
 		if (debug) log.setLevel(Level.FINEST);
 		aspenCheck.actuallyMain();
 	}
 	
-	private void actuallyMain(){
+	private void actuallyMain() {
 		try {
 			getLoginDetails();
 			AspenWebFetch aspenWebFetch = new AspenWebFetch();
-			aspenWebFetch.login(username, password);
-			schedule = new Schedule(aspenWebFetch.schedulePage().parse());
-			
-			CalWebFetch calWebFetch = new CalWebFetch();
-			calendar = new WebCalendar(calWebFetch.todayPage().parse());
-			
-			GoogleCalFetch gcalFetch = new GoogleCalFetch("melroseschools.com_0iitdti0rfgbgc4un9vf8520bc@group.calendar.google.com");
-			hsAnnouncements = new GoogleCalendar(gcalFetch.getCalendar());
+			if (aspenWebFetch.login(username, password) != null) schedule = new Schedule(aspenWebFetch.schedulePage().parse());
+   
+			calendar = new ICalendar(getICal(calendarURL), false);
+			hsAnnouncements = new ICalendar(getICal(announcementsURL), true);
 			
 			System.out.println(jsonData().build().toString());
 			
@@ -72,12 +70,15 @@ public class AspenCheck {
 		}
 	}
 	
-	public JsonObjectBuilder jsonData(){
+	public JsonObjectBuilder jsonData() {
 		JsonObjectBuilder json = Json.createObjectBuilder();
+		
+		// Return empty instead of null if object doesn't exist
+		JsonObjectBuilder s = schedule != null ? schedule.getJsonData(hidePrivateData) : Json.createObjectBuilder();
 
 		json = json.add("version", 2) // Increment as JSON data changes
 						.add("asOf", Instant.now().getEpochSecond()) // Current time
-						.add("schedule", schedule.getJsonData(hidePrivateData)) // Schedule Data
+						.add("schedule", s) // Schedule Data
 						.add("calendar", calendar.getJsonData()) // Calendar Data
 						.add("announcements", Json.createObjectBuilder() // Announcements from GCal
 										.add("hs", hsAnnouncements.getJsonData()) // High School Announcements
@@ -87,7 +88,7 @@ public class AspenCheck {
 		return json;
 	}
 	
-	private void writeJsonFile(File file, JsonObjectBuilder json) throws IOException{
+	private void writeJsonFile(File file, JsonObjectBuilder json) throws IOException {
 		StringWriter stringWriter = new StringWriter();
 		try (JsonWriter jw = Json.createWriter(stringWriter)){
 			jw.writeObject(json.build());
@@ -108,7 +109,7 @@ public class AspenCheck {
 	 * Priority: Params, Env, File, Testing
 	 * @throws IOException Couldn't read file
 	 */
-	private void getLoginDetails() throws IOException{
+	private void getLoginDetails() throws IOException {
 		if (username == null || password == null) {
 			if (System.getenv("ASPEN_UNAME") != null && System.getenv("ASPEN_PASS") != null) {
 				username = System.getenv("ASPEN_UNAME");
@@ -129,4 +130,16 @@ public class AspenCheck {
 			}
 		}
 	}
+  
+  public Calendar getICal(String url) throws IOException {
+    URLConnection c = new URL(url).openConnection();
+    c.setRequestProperty("User-Agent", GenericWebFetch.agent);
+    
+    try (InputStream is = c.getInputStream()) {
+      return new CalendarBuilder().build(is);
+    } catch (ParserException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 }

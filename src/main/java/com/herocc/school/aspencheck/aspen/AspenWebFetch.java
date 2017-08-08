@@ -14,8 +14,12 @@ public class AspenWebFetch extends GenericWebFetch {
 	public Connection.Response schedulePage() throws IOException {
 		try {
 			return getPage("https://ma-melrose.myfollett.com/aspen/studentScheduleContextList.do?navkey=myInfo.sch.list");
-		} catch (HttpStatusException e){
-			AspenCheck.log.severe("Login details incorrect, or Aspen is having issues, please try again later!");
+		} catch (HttpStatusException e) {
+			if (e.getStatusCode() == 404) {
+        AspenCheck.log.severe("This login doesn't have a schedule page!");
+      } else {
+        AspenCheck.log.severe("Login details incorrect, or Aspen is having issues, please try again later!");
+      }
 			return null;
 		}
 	}
@@ -41,7 +45,7 @@ public class AspenWebFetch extends GenericWebFetch {
 		
 		if (username == null || password == null){
 			AspenCheck.log.severe("Username or Password not specified!");
-			System.exit(1);
+			return null;
 		}
 		
 		Connection.Response responsePostLogin = Jsoup.connect(loginUrl)
