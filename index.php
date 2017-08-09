@@ -28,6 +28,7 @@ function main(){
 
 function getCachedSched(){
     global $schedName;
+    if (!file_exists($schedName)) { return null; }
     $handle = fopen($schedName, "r");
     $contents = fread($handle, filesize($schedName));
     fclose($handle);
@@ -55,19 +56,25 @@ function runAspenJar($username, $pass, $file, $async){
 
 function buildAndCopyJar(){
     global $jarName;
+    $jarPath = "working/$jarName";
 
+    if (!file_exists("working")) { // If the working directory doesn't exist
+        mkdir("working"); // Make the working directory
+    } else if (file_exists("$jarPath")) { return; } // Else if 'working' exists and has the jar, stop
+    
     if (file_exists("build/libs/$jarName")) {
-        if (!copy("build/libs/$jarName", "$jarName")) {
+        if (!copy("build/libs/$jarName", $jarPath)) {
             error_log("Unable to copy and build jar!");
         }
     } else {
         if (file_exists("build.gradle")) {
             exec("./gradlew build");
-            if (!copy("build/libs/$jarName", "$jarName")) {
+            if (!copy("build/libs/$jarName", $jarPath)) {
                 error_log("Unable to copy and build jar!");
             }
         }
     }
+    chdir("working"); // Enter the working directory to run the jar / store sched.txt
 }
 
 main();
