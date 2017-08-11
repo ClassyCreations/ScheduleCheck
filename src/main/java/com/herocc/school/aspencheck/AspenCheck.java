@@ -9,9 +9,7 @@ import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonWriter;
+import javax.json.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -76,17 +74,32 @@ public class AspenCheck {
 		// Return empty instead of null if object doesn't exist
 		JsonObjectBuilder s = schedule != null ? schedule.getJsonData(hidePrivateData) : Json.createObjectBuilder();
 
+		CSVParse hsSheet = new CSVParse(GenericWebFetch.getURL("https://docs.google.com/spreadsheet/ccc?key=1C_Rmk0act0Q8VHdjeh0TAsmfbWtvK_P9z25U-7BJW78&output=csv"));
+		JsonArrayBuilder hsA = mergeJsonArrays(hsAnnouncements.getJsonData(), hsSheet.getJsonData());
 		json = json.add("version", 2) // Increment as JSON data changes
 						.add("asOf", Instant.now().getEpochSecond()) // Current time
 						.add("schedule", s) // Schedule Data
 						.add("calendar", calendar.getJsonData()) // Calendar Data
-						.add("announcements", Json.createObjectBuilder() // Announcements from GCal
-										.add("hs", hsAnnouncements.getJsonData()) // High School Announcements
+						.add("announcements", Json.createObjectBuilder() // Announcements from GCal / CSV
+										.add("hs", hsA) // High School Announcements
 										// Possibly separate GCal later for Middle / Other schools?
 						);
 		
 		return json;
 	}
+  
+  private JsonArrayBuilder mergeJsonArrays(JsonArrayBuilder arr1, JsonArrayBuilder arr2) {
+    JsonArrayBuilder arr = Json.createArrayBuilder();
+    
+    for (JsonValue j : arr1.build()) {
+      arr.add(j);
+    }
+    for (JsonValue j : arr2.build()) {
+      arr.add(j);
+    }
+    
+    return arr;
+  }
 	
 	private void writeJsonFile(File file, JsonObjectBuilder json) throws IOException {
 		StringWriter stringWriter = new StringWriter();

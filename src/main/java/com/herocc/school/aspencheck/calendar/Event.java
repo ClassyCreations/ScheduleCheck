@@ -1,11 +1,13 @@
 package com.herocc.school.aspencheck.calendar;
 
 import lombok.Data;
-import net.fortuna.ical4j.model.DateTime;
+
+import java.time.LocalDateTime;
 
 @Data
 public class Event {
   private String title;
   private String description;
-  private DateTime dateTime;
+  private LocalDateTime startTime;
+  private LocalDateTime endTime;
 }

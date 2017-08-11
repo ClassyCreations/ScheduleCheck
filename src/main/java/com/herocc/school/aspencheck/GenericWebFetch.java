@@ -19,4 +19,14 @@ public class GenericWebFetch {
 							.followRedirects(true)
 							.execute();
 	}
+	
+	public static String getURL(String url) {
+		GenericWebFetch g = new GenericWebFetch();
+		try {
+			return g.getPage(url).body();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

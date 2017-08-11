@@ -1,5 +1,6 @@
 package com.herocc.school.aspencheck.calendar;
 
+import com.herocc.school.aspencheck.GenericEventGenerator;
 import net.fortuna.ical4j.filter.Filter;
 import net.fortuna.ical4j.filter.PeriodRule;
 import net.fortuna.ical4j.filter.Rule;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ICalendar {
+public class ICalendar implements GenericEventGenerator {
   private Calendar ical;
   private List<Event> events;
   
@@ -22,7 +23,7 @@ public class ICalendar {
     this.getEvents(checkEventsOccurringNow);
   }
   
-  private List<Event> getEvents(boolean checkEventsOccurringNow) {
+  public List<Event> getEvents(boolean checkEventsOccurringNow) {
     events = new ArrayList<>();
     Collection eventsToday = ical.getComponents(Component.VEVENT);
     

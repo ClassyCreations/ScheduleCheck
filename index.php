@@ -1,6 +1,6 @@
 <?php
 $schedName = "sched.txt";
-$jarName = "ScheduleCheck-1.4-SNAPSHOT.jar";
+$jarName = "ScheduleCheck-1.5-SNAPSHOT.jar";
 $cookieName = "schedulecheck_user_guid";
 
 header('Cache-Control: no-cache, must-revalidate'); // No Cache

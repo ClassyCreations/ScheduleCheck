@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'com.herocc.school.aspencheck'
-version '1.4-SNAPSHOT'
+version '1.5-SNAPSHOT'
 
 sourceCompatibility = 1.8
 mainClassName = group + ".AspenCheck"
@@ -20,6 +20,8 @@ dependencies {
     compile 'org.glassfish:javax.json:1.0.4' // Json Library
     compile 'org.mnode.ical4j:ical4j:2.0.2' // iCal parser
     compile 'org.slf4j:slf4j-nop:1.7.25' // Needed so iCal stops yelling about logs
+    compile 'org.apache.commons:commons-csv:1.4' // Parsing CSV Files
+
     compileOnly 'org.projectlombok:lombok:1.16.18' // Lombok Library
 
     testCompile group: 'junit', name: 'junit', version: '4.12' // Test Suite
