@@ -44,7 +44,7 @@ public class AspenWebFetch extends GenericWebFetch {
 		mapParams.put("mobile", "false");
 		
 		if (username == null || password == null){
-			AspenCheck.log.severe("Username or Password not specified!");
+			AspenCheck.log.severe("Username or Password not specified! Continuing anyway, but stuff will be broken...");
 			return null;
 		}
 		
