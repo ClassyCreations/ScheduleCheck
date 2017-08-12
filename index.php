@@ -67,19 +67,16 @@ function buildAndCopyJar(){
   
   if (!file_exists("working")) { // If the working directory doesn't exist
     mkdir("working"); // Make the working directory
-  } else if (file_exists("$jarPath")) {
-    // Else if 'working' exists and has the jar, do nothing
+  }
+  if (file_exists("build/libs/$jarName")) {
+    if (!copy("build/libs/$jarName", $jarPath)) {
+      error_log("Unable to copy and build jar!");
+    }
   } else {
-    if (file_exists("build/libs/$jarName")) {
+    if (file_exists("build.gradle")) {
+      exec("./gradlew build");
       if (!copy("build/libs/$jarName", $jarPath)) {
         error_log("Unable to copy and build jar!");
-      }
-    } else {
-      if (file_exists("build.gradle")) {
-        exec("./gradlew build");
-        if (!copy("build/libs/$jarName", $jarPath)) {
-          error_log("Unable to copy and build jar!");
-        }
       }
     }
   }
