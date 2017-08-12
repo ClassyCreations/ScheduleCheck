@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
 import com.herocc.school.aspencheck.aspen.Schedule;
+import com.herocc.school.aspencheck.calendar.Event;
 import com.herocc.school.aspencheck.calendar.ICalendar;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
@@ -14,13 +15,18 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AspenCheck {
 	public static final Logger log = Logger.getLogger(AspenCheck.class.getName());
+	public static final TimeZone timezone = TimeZone.getTimeZone("America/New_York");
 	
 	@Parameter(names = {"--username", "-u"}, description = "Aspen Username")
 	private String username;
@@ -46,6 +52,7 @@ public class AspenCheck {
 	
 	public static void main(String[] args) {
 		AspenCheck aspenCheck = new AspenCheck();
+    TimeZone.setDefault(timezone);
 		new JCommander(aspenCheck, args);
 		if (debug) log.setLevel(Level.FINEST);
 		aspenCheck.actuallyMain();
@@ -79,7 +86,7 @@ public class AspenCheck {
 		json = json.add("version", 2) // Increment as JSON data changes
 						.add("asOf", Instant.now().getEpochSecond()) // Current time
 						.add("schedule", s) // Schedule Data
-						.add("calendar", calendar.getJsonData()) // Calendar Data
+						.add("calendar", processJsonDetectSpecialDays(calendar.getEvents(true))) // Calendar Data
 						.add("announcements", Json.createObjectBuilder() // Announcements from GCal / CSV
 										.add("hs", hsA) // High School Announcements
 										// Possibly separate GCal later for Middle / Other schools?
@@ -87,6 +94,25 @@ public class AspenCheck {
 		
 		return json;
 	}
+  
+  private JsonObjectBuilder processJsonDetectSpecialDays(List<Event> events) {
+    JsonArrayBuilder jsonEvents = Json.createArrayBuilder();
+    
+    boolean halfDay = false;
+    boolean noSchool = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY).contains(LocalDate.now().getDayOfWeek());
+    
+    for (Event e : events) {
+      if (e.getTitle().contains("Early Release")) halfDay = true;
+      if (e.getTitle().contains("No School")) noSchool = true;
+  
+      jsonEvents.add(e.getJsonFormat());
+    }
+    
+    return Json.createObjectBuilder()
+        .add("isHalfDay", halfDay)
+        .add("isNoSchool", noSchool)
+        .add("events", jsonEvents);
+  }
   
   private JsonArrayBuilder mergeJsonArrays(JsonArrayBuilder arr1, JsonArrayBuilder arr2) {
     JsonArrayBuilder arr = Json.createArrayBuilder();
