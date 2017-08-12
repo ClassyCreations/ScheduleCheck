@@ -4,9 +4,6 @@ import com.herocc.school.aspencheck.calendar.Event;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
 import java.io.IOException;
 import java.io.StringReader;
 import java.time.LocalDate;
@@ -16,15 +13,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CSVParse implements GenericEventGenerator {
+public class CSVParse extends GenericEventGenerator {
   private String csv;
-  List<Event> events = new ArrayList<>();
   
   public CSVParse(String csv) {
     this.csv = csv;
   }
   
   public List<Event> getEvents(boolean checkEventsOccurringNow) {
+    List<Event> events = new ArrayList<>();
     try {
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
       ZoneId zoneId = ZoneId.systemDefault();
@@ -43,10 +40,13 @@ public class CSVParse implements GenericEventGenerator {
         
         if (checkEventsOccurringNow) {
           long nowEpoch = LocalDateTime.now().atZone(zoneId).toEpochSecond();
+  
           // If the start time has occurred (start - current epoch is negative)
           // And the end time has not occurred (end - current is positive)
-          if (dtStart.atZone(zoneId).toEpochSecond() - nowEpoch < 0
-              && dtEnd.atZone(zoneId).toEpochSecond() - nowEpoch > 0) events.add(e);
+          long diffStart = dtStart.atZone(zoneId).toEpochSecond() - nowEpoch;
+          long diffEnd = dtEnd.atZone(zoneId).toEpochSecond() - nowEpoch;
+          
+          if (diffStart < 0 && diffEnd > 0) events.add(e);
         } else {
           events.add(e);
         }
@@ -55,15 +55,5 @@ public class CSVParse implements GenericEventGenerator {
       return events;
     }
     return events;
-  }
-  
-  public JsonArrayBuilder getJsonData() {
-    JsonArrayBuilder jsonEvents = Json.createArrayBuilder();
-    for (Event event : getEvents(true)) {
-      JsonObjectBuilder jsonAnn = Json.createObjectBuilder();
-      jsonAnn.add("title", event.getTitle()).add("description", event.getDescription());
-      jsonEvents.add(jsonAnn);
-    }
-    return jsonEvents;
   }
 }

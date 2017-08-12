@@ -7,24 +7,19 @@ import net.fortuna.ical4j.filter.Rule;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ICalendar implements GenericEventGenerator {
+public class ICalendar extends GenericEventGenerator {
   private Calendar ical;
-  private List<Event> events;
   
-  public ICalendar(Calendar ical, boolean checkEventsOccurringNow) {
+  public ICalendar(Calendar ical) {
     this.ical = ical;
-    this.getEvents(checkEventsOccurringNow);
   }
   
   public List<Event> getEvents(boolean checkEventsOccurringNow) {
-    events = new ArrayList<>();
+    List<Event> events = new ArrayList<>();
     Collection eventsToday = ical.getComponents(Component.VEVENT);
     
     if (checkEventsOccurringNow) {
@@ -47,15 +42,5 @@ public class ICalendar implements GenericEventGenerator {
       events.add(event);
     }
     return events;
-  }
-  
-  public JsonArrayBuilder getJsonData() {
-    JsonArrayBuilder jsonEvents = Json.createArrayBuilder();
-    for (Event event : events) {
-      JsonObjectBuilder jsonAnn = Json.createObjectBuilder();
-      jsonAnn.add("title", event.getTitle()).add("description", event.getDescription());
-      jsonEvents.add(jsonAnn);
-    }
-    return jsonEvents;
   }
 }
