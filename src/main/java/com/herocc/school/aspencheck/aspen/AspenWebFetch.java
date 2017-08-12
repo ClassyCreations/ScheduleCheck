@@ -15,10 +15,10 @@ public class AspenWebFetch extends GenericWebFetch {
 		try {
 			return getPage("https://ma-melrose.myfollett.com/aspen/studentScheduleContextList.do?navkey=myInfo.sch.list");
 		} catch (HttpStatusException e) {
-			if (e.getStatusCode() == 404) {
-        AspenCheck.log.severe("This login doesn't have a schedule page!");
+			if (e.getStatusCode() == 404 || e.getStatusCode() == 500) {
+        AspenCheck.log.warning("This login doesn't have a schedule page!");
       } else {
-        AspenCheck.log.severe("Login details incorrect, or Aspen is having issues, please try again later!");
+        AspenCheck.log.warning("Login details incorrect, or Aspen is having issues, please try again later!");
       }
 			return null;
 		}
@@ -44,7 +44,7 @@ public class AspenWebFetch extends GenericWebFetch {
 		mapParams.put("mobile", "false");
 		
 		if (username == null || password == null){
-			AspenCheck.log.severe("Username or Password not specified! Continuing anyway, but stuff will be broken...");
+			AspenCheck.log.warning("Username or Password not specified! Continuing anyway, but stuff will be broken...");
 			return null;
 		}
 		

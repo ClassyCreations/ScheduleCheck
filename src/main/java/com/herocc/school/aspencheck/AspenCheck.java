@@ -62,7 +62,8 @@ public class AspenCheck {
 		try {
 			getLoginDetails();
 			AspenWebFetch aspenWebFetch = new AspenWebFetch();
-			if (aspenWebFetch.login(username, password) != null) schedule = new Schedule(aspenWebFetch.schedulePage().parse());
+			if (aspenWebFetch.login(username, password) != null && aspenWebFetch.schedulePage() != null)
+				schedule = new Schedule(aspenWebFetch.schedulePage().parse());
    
 			calendar = new ICalendar(getICal(calendarURL));
 			hsAnnouncements = new ICalendar(getICal(announcementsURL));
