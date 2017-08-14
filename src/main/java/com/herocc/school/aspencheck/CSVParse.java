@@ -21,6 +21,37 @@ public class CSVParse extends GenericEventGenerator {
     this.csv = csv;
   }
   
+  private String buildDescString(CSVRecord record) {
+    String description;
+    
+    final String shortDesc = record.get(2).trim();
+    final String occurring = record.get(3);
+    final String startTime = record.get(4);
+    final String location  = record.get(5).trim();
+    final String cost      = record.get(6);
+    final String contact   = record.get(7);
+    
+    // Short Desc
+    description = "There will be ";
+    if (!shortDesc.toLowerCase().startsWith("a") || !shortDesc.toLowerCase().startsWith("an")) description += "a ";
+    description += shortDesc;
+    
+    // Location / Date / Time occurring
+    description += " in the " + location + " on " + occurring + " at " + startTime;
+    
+    // Cost
+    try {
+      if (Integer.parseInt(cost) != 0) description += " costing $" + cost;
+    } catch (NumberFormatException numberException) {
+      AspenCheck.log.warning("Unable to parse cost " + cost);
+    }
+    
+    // Contact person
+    description += ", contact " + contact + " for more information";
+    
+    return description;
+  }
+  
   public List<Event> getEvents(boolean checkEventsOccurringNow) {
     List<Event> events = new ArrayList<>();
     try {
@@ -32,7 +63,7 @@ public class CSVParse extends GenericEventGenerator {
         for (CSVRecord record : records) {
           Event e = new Event();
           e.setTitle(record.get(1));
-          e.setDescription(record.get(2));
+          e.setDescription(buildDescString(record));
     
           LocalDateTime dtStart = LocalDateTime.MIN;
           LocalDateTime dtEnd = LocalDateTime.MIN;
