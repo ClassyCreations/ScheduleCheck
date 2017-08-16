@@ -45,7 +45,8 @@ public class AspenCheck {
   
   private String calendarURL = "http://melroseschools.com/calendar/today/?ical=1&tribe_display=day&tribe_eventcategory=149";
   private String announcementsURL = "https://calendar.google.com/calendar/ical/melroseschools.com_0iitdti0rfgbgc4un9vf8520bc@group.calendar.google.com/public/full.ics";
-	
+	private String csvURL = "https://docs.google.com/spreadsheet/ccc?key=1C_Rmk0act0Q8VHdjeh0TAsmfbWtvK_P9z25U-7BJW78&output=csv";
+ 
 	public static Schedule schedule;
 	public static ICalendar calendar;
 	public static ICalendar hsAnnouncements;
@@ -82,7 +83,7 @@ public class AspenCheck {
 		// Return empty instead of null if object doesn't exist
 		JsonObjectBuilder s = schedule != null ? schedule.getJsonData(hidePrivateData) : Json.createObjectBuilder();
 
-		CSVParse hsSheet = new CSVParse(GenericWebFetch.getURL("https://docs.google.com/spreadsheet/ccc?key=1C_Rmk0act0Q8VHdjeh0TAsmfbWtvK_P9z25U-7BJW78&output=csv"));
+		CSVParse hsSheet = new CSVParse(GenericWebFetch.getURL(csvURL));
 		JsonArrayBuilder hsA = mergeJsonArrays(hsAnnouncements.getJsonData(), hsSheet.getJsonData());
 		json = json.add("version", 2) // Increment as JSON data changes
 						.add("asOf", Instant.now().getEpochSecond()) // Current time
