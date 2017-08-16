@@ -18,7 +18,6 @@ import java.nio.file.Files;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.TimeZone;
@@ -102,8 +101,7 @@ public class AspenCheck {
     
     boolean halfDay = false;
     boolean noSchool = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY).contains(LocalDate.now().getDayOfWeek());
-    
-		Collections.shuffle(events);
+		
     for (Event e : events) {
       if (e.getTitle().contains("Early Release")) halfDay = true;
       if (e.getTitle().contains("No School")) noSchool = true;

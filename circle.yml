@@ -1,0 +1,5 @@
+machine:
+  java:
+    version: oraclejdk8
+  php:
+    version: 7.1.6
