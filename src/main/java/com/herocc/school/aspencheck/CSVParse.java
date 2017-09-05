@@ -32,8 +32,8 @@ public class CSVParse extends GenericEventGenerator {
     final String contact   = record.get(7);
     
     // Short Desc
-    description = "There will be ";
-    if (!shortDesc.toLowerCase().startsWith("a") || !shortDesc.toLowerCase().startsWith("an")) description += "a ";
+    description = "";
+    //if (!shortDesc.toLowerCase().startsWith("a") || !shortDesc.toLowerCase().startsWith("an")) description += "a ";
     description += shortDesc;
     
     // Location / Date / Time occurring
