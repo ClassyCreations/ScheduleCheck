@@ -179,6 +179,7 @@ public class AspenCheck {
     try (InputStream is = c.getInputStream()) {
       return new CalendarBuilder().build(is);
     } catch (ParserException e) {
+			AspenCheck.log.warning("Unable to parse iCal from " + url);
       e.printStackTrace();
     }
     return null;

@@ -22,6 +22,7 @@ public class ICalendar extends GenericEventGenerator {
   
   public List<Event> getEvents(boolean checkEventsOccurringNow) {
     List<Event> events = new ArrayList<>();
+    if (ical == null) return events;
     Collection<VEvent> eventsToday = ical.getComponents(Component.VEVENT);
     
     for (VEvent announcement : eventsToday) {

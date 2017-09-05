@@ -22,7 +22,7 @@ public class CSVParse extends GenericEventGenerator {
   }
   
   private String buildDescString(CSVRecord record) {
-    String description;
+    String description = "";
     
     final String shortDesc = record.get(2).trim();
     final String occurring = record.get(3);
@@ -31,8 +31,6 @@ public class CSVParse extends GenericEventGenerator {
     final String cost      = record.get(6);
     final String contact   = record.get(7);
     
-    // Short Desc
-    description = "";
     //if (!shortDesc.toLowerCase().startsWith("a") || !shortDesc.toLowerCase().startsWith("an")) description += "a ";
     description += shortDesc;
     
@@ -62,6 +60,11 @@ public class CSVParse extends GenericEventGenerator {
         Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(new StringReader(csv));
         for (CSVRecord record : records) {
           Event e = new Event();
+          boolean invalidRecord = false;
+          for (int i = 0; i < 9; i++) { // Number should be number of rows starting at 0 that shouldn't be blank
+            if (record.get(i) == null || record.get(i).isEmpty()) invalidRecord = true;
+          }
+          if (invalidRecord) continue; // If the record is missing information, skip it
           e.setTitle(record.get(1));
           e.setDescription(buildDescString(record));
     
