@@ -35,7 +35,9 @@ public class CSVParse extends GenericEventGenerator {
     description += shortDesc;
     
     // Location / Date / Time occurring
-    description += " in the " + location + " on " + occurring + " at " + startTime;
+    description += " in ";
+    if (!location.toLowerCase().startsWith("room")) description += "the ";
+    description += location + " on " + occurring + " at " + startTime;
     
     // Cost
     try {
