@@ -18,6 +18,7 @@ public class Schedule {
 	public String currentClass;
 	public boolean classInSession;
 	public String block;
+	public String advisoryBlock;
 	public int blockOfDay;
 	public ArrayList<String> blockOrder;
 	
@@ -27,9 +28,12 @@ public class Schedule {
 		this.currentClass = getCurrentClass();
 		this.classInSession = isClassInSession();
 		this.block = getBlock();
+		this.advisoryBlock = getAdvisoryBlock();
 		this.blockOfDay = getBlockOfDay();
 		this.blockOrder = getDaySchedule();
 	}
+	
+	final int blocksInDay = 6;
 	
 	private int getDay() {
 		Elements matching = schedPage.body().getElementsByAttributeValueContaining("style", "border: solid 1px red;");
@@ -83,12 +87,24 @@ public class Schedule {
 		
 		Elements trs = schedPage.body().getElementsByAttributeValueContaining("class", "listHeader headerLabelBackground")
 						.first().siblingElements();
-		
-		for (Element tr : trs) {
+		for (int i = 0; i < Math.min(trs.size(), blocksInDay); i++) { // 6 is number of blocks in the day
+			Element tr = trs.get(i);
 			String text = tr.children().get(day).getElementsByAttributeValueContaining("style", "font-weight: bold").text();
 			if (!text.isEmpty()) blocks.add(String.valueOf(text.charAt(0)));
 		}
 		return blocks;
+	}
+	
+	private String getAdvisoryBlock() {
+		String advisoryBlock = "Z"; // Return Z if there is no advisory
+		
+		Elements trs = schedPage.body().getElementsByAttributeValueContaining("class", "listHeader headerLabelBackground")
+						.first().siblingElements();
+		if (trs.size() < blocksInDay) return advisoryBlock;
+		String text = trs.get(blocksInDay).children().get(day).getElementsByAttributeValueContaining("style", "font-weight: bold").text();
+		if (!text.isEmpty()) advisoryBlock = String.valueOf(text.charAt(0));
+		// TODO for now this returns an (unknown magic) number, try to decipher what it means
+		return advisoryBlock;
 	}
 	
 	private boolean isClassInSession() {
@@ -105,6 +121,7 @@ public class Schedule {
 		return Json.createObjectBuilder()
 						.add("day", this.day)
 						.add("block", this.block)
+						.add("advisoryBlock", this.advisoryBlock)
 						.add("blockOfDay", this.blockOfDay)
 						.add("class", localClassName)
 						.add("isClassInSession", this.classInSession)
