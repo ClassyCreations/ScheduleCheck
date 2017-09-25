@@ -100,7 +100,7 @@ public class Schedule {
 		
 		Elements trs = schedPage.body().getElementsByAttributeValueContaining("class", "listHeader headerLabelBackground")
 						.first().siblingElements();
-		if (trs.size() < blocksInDay) return advisoryBlock;
+		if (trs.size() <= blocksInDay) return advisoryBlock;
 		String text = trs.get(blocksInDay).children().get(day).getElementsByAttributeValueContaining("style", "font-weight: bold").text();
 		if (!text.isEmpty()) advisoryBlock = String.valueOf(text.charAt(0));
 		// TODO for now this returns an (unknown magic) number, try to decipher what it means
