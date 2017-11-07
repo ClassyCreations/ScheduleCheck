@@ -60,12 +60,13 @@ function getCachedSched(){
  */
 function runAspenJar($username, $pass, $file, $async, $hide){
   global $jarName;
+  $pidFile = ".refreshPid";
   
   $command = "java -jar $jarName -f $file -u $username -p $pass";
   if ($hide == true) $command .= " --hidePrivateData";
   if ($async == true && !defined('PHP_WINDOWS_VERSION_MAJOR') &&
-    !isRunning(fread(fopen('.refreshPid', 'r'), filesize(".refreshPid")))) {
-    $command = sprintf("%s > %s 2>&1 & echo $! > %s", $command, "/dev/null", ".refreshPid");
+    !isRunning(fread(fopen($pidFile, 'r'), filesize($pidFile)))) {
+    $command = sprintf("%s > %s 2>&1 & echo $! > %s", $command, "/dev/null", $pidFile);
   }
   return exec($command);
 }

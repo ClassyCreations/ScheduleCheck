@@ -41,7 +41,7 @@ public class CSVParse extends GenericEventGenerator {
     
     // Cost
     try {
-      if (Integer.parseInt(cost) != 0 || cost != null) description += " costing $" + cost;
+      if (cost != null && Integer.parseInt(cost) != 0) description += " costing $" + cost;
     } catch (NumberFormatException numberException) {
       AspenCheck.log.warning("Unable to parse cost " + cost);
     }
