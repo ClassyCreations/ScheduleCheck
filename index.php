@@ -10,10 +10,11 @@ header('Access-Control-Allow-Origin: *'); // Allow scripts to call me
 function main(){
   global $schedName, $cookieName;
   $refreshTime = 120;
-  $weekDay = date('w', strtotime($date));
-  if ($weekDay == 0 || $weekDay == 6) {
-      $refreshTime = 1200;
-    } // 20 Minutes
+  $weekend = date('w') == 0 || date('w') == 6;
+  $schoolInSession = date('Hi') < '0630' || date('Hi') > '1415'; // Usual time school is in session
+  if ($weekend || !$schoolInSession) {
+    $refreshTime = 10 * 60; // 10 minutes
+  }
   
   if (!isset($_COOKIE[$cookieName])) setcookie($cookieName, guidv4(random_bytes(16)), 2147483647);
   buildAndCopyJar();
@@ -25,7 +26,7 @@ function main(){
   if (!$uname == null && !$pass == null){ // If Username and Password are given, use custom results
     echo runAspenJar($uname, $pass, "/dev/null", false, false);
   } else if (time() - $json->{'asOf'} > $refreshTime) { // If cache expired, start renewal process and serve cache
-    error_log("Cached time: " . $json->{'asOf'} . " is greater than " . time() . " - 120, refreshing", 0);
+    error_log("Cached time: " . $json->{'asOf'} . " is greater than " . time() . " - " . $refreshTime . ", refreshing", 0);
     if (getCachedSched() != null) {
       echo getCachedSched(); // Use cached schedule if it exists
       runAspenJar(getenv('ASPEN_UNAME'), getenv('ASPEN_PASS'), $schedName, true, true);
@@ -62,7 +63,10 @@ function runAspenJar($username, $pass, $file, $async, $hide){
   
   $command = "java -jar $jarName -f $file -u $username -p $pass";
   if ($hide == true) $command .= " --hidePrivateData";
-  if ($async == true && !defined('PHP_WINDOWS_VERSION_MAJOR')) $command .= " &> /dev/null &";
+  if ($async == true && !defined('PHP_WINDOWS_VERSION_MAJOR') &&
+    !isRunning(fread(fopen('.refreshPid', 'r'), filesize(".refreshPid")))) {
+    $command = sprintf("%s > %s 2>&1 & echo $! > %s", $command, "/dev/null", ".refreshPid");
+  }
   return exec($command);
 }
 
@@ -93,6 +97,17 @@ function guidv4($data){ // Thanks https://stackoverflow.com/a/15875555/1709894
   $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
   $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
   return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+
+function isRunning($pid){ // Thanks https://stackoverflow.com/a/45966/1709894
+  try{
+    $result = shell_exec(sprintf("ps %d", $pid));
+    if(count(preg_split("/\n/", $result)) > 2){
+      return true;
+    }
+  } catch(Exception $e){}
+  
+  return false;
 }
 
 main();
