@@ -9,6 +9,11 @@ header('Access-Control-Allow-Origin: *'); // Allow scripts to call me
 
 function main(){
   global $schedName, $cookieName;
+  $refreshTime = 120;
+  $weekDay = date('w', strtotime($date));
+  if ($weekDay == 0 || $weekDay == 6) {
+      $refreshTime = 1200;
+    } // 20 Minutes
   
   if (!isset($_COOKIE[$cookieName])) setcookie($cookieName, guidv4(random_bytes(16)), 2147483647);
   buildAndCopyJar();
@@ -19,7 +24,7 @@ function main(){
   $json = json_decode(getCachedSched());
   if (!$uname == null && !$pass == null){ // If Username and Password are given, use custom results
     echo runAspenJar($uname, $pass, "/dev/null", false, false);
-  } else if (time() - $json->{'asOf'} > 120) { // If cache expired, start renewal process and serve cache
+  } else if (time() - $json->{'asOf'} > $refreshTime) { // If cache expired, start renewal process and serve cache
     error_log("Cached time: " . $json->{'asOf'} . " is greater than " . time() . " - 120, refreshing", 0);
     if (getCachedSched() != null) {
       echo getCachedSched(); // Use cached schedule if it exists
