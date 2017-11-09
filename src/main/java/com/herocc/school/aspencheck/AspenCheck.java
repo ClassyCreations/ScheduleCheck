@@ -23,8 +23,8 @@ public class AspenCheck {
 	public static final Logger log = Logger.getLogger(AspenCheck.class.getName());
 	public static final TimeZone timezone = TimeZone.getTimeZone("America/New_York");
 	
-	public static String username; //"taaspenstudent";
-	public static String password; //"teacher2013";
+	public static String username;
+	public static String password;
 	
 	public static void main(String[] args) {
 		TimeZone.setDefault(timezone);
@@ -35,7 +35,6 @@ public class AspenCheck {
 	/**
 	 * Gets the login Username and Password
 	 * Priority: Params, Env, File, Testing
-	 * @throws IOException Couldn't read file
 	 */
 	private static void getLoginDetails() {
 		if (username == null || password == null) {
@@ -64,6 +63,12 @@ public class AspenCheck {
 		}
 	}
   
+  /**
+   * Gets a Calendar object from a given URL
+   * @param url URL of the iCal File
+   * @return Calendar object
+   * @throws IOException if unable to fetch URL
+   */
   public static Calendar getICal(String url) throws IOException {
     URLConnection c = new URL(url).openConnection();
     c.setRequestProperty("User-Agent", Configs.WEB_USER_AGENT);
