@@ -1,7 +1,7 @@
 package com.herocc.school.aspencheck.aspen;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
+import com.herocc.school.aspencheck.TimestampedObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Schedule {
+public class Schedule extends TimestampedObject {
   private Document schedPage;
   
   public int day;
@@ -20,7 +20,6 @@ public class Schedule {
   public String advisoryBlock;
   public int blockOfDay;
   public ArrayList<String> blockOrder;
-  @Getter public long asOf = System.currentTimeMillis() / 1000;
   
   public Schedule(Document schedPage){
     this.schedPage = schedPage;

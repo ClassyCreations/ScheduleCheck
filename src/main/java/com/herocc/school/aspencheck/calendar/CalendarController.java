@@ -15,24 +15,24 @@ import java.util.logging.Level;
 @RestController
 @RequestMapping("/announcements")
 public class CalendarController extends GenericRestController {
-  List<Event> events = new ArrayList<>();
+  List<Event> announcements = new ArrayList<>();
   
   @Getter private List<Event> schoolEventsList = new ArrayList<>();
   @Getter private List<Event> hsAnnouncementsList = new ArrayList<>();
   
   @RequestMapping()
   public List<Event> getEvents() {
-    if (System.currentTimeMillis() / 1000 > getNextRefreshTime()) {
-      AspenCheck.log.log(Level.INFO, "Refreshing announcements, " + String.valueOf(System.currentTimeMillis() / 1000 + " > " + getNextRefreshTime()));
+    if (AspenCheck.getUnixTime() > getNextRefreshTime()) {
+      AspenCheck.log.log(Level.INFO, "Refreshing announcements, " + String.valueOf(AspenCheck.getUnixTime() + " > " + getNextRefreshTime()));
       new Thread(() -> {
         List<Event> tmp = new ArrayList<>();
         tmp.addAll(refreshSchoolCal());
         tmp.addAll(refreshHsAnnouncements());
-        events = tmp;
-        refreshTime = System.currentTimeMillis() / 1000;
+        announcements = tmp;
+        lastRefreshTimestamp = AspenCheck.getUnixTime();
       }).start();
     }
-    return events;
+    return announcements;
   }
   
   @Cacheable("schoolCalEvents")

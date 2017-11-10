@@ -22,9 +22,9 @@ public class AspenScheduleController extends GenericRestController {
   
     if (u != null && p != null) return getSchedule(u, p);
     
-    if (System.currentTimeMillis() / 1000 > getNextRefreshTime()) {
-      AspenCheck.log.log(Level.INFO, "Refreshing Aspen Schedule, " + System.currentTimeMillis() / 1000 + " > " + getNextRefreshTime());
-      new Thread(this::refreshSchedule).start();
+    if (AspenCheck.getUnixTime() > getNextRefreshTime()) {
+      AspenCheck.log.log(Level.INFO, "Refreshing Aspen Schedule, " + String.valueOf(AspenCheck.getUnixTime() + " > " + getNextRefreshTime()));
+      new Thread(this::refresh).start();
     }
     return schedule;
   }
@@ -33,7 +33,7 @@ public class AspenScheduleController extends GenericRestController {
   @CacheEvict(value = "publicSchedule", allEntries=true)
   public Schedule refreshSchedule() {
     schedule = getSchedule(AspenCheck.username, AspenCheck.password);
-    refreshTime = System.currentTimeMillis() / 1000;
+    lastRefreshTimestamp = System.currentTimeMillis() / 1000;
     return schedule;
   }
   

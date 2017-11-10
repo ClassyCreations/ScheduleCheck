@@ -81,4 +81,8 @@ public class AspenCheck {
     }
     return null;
   }
+  
+  public static long getUnixTime() {
+    return System.currentTimeMillis() / 1000;
+  }
 }
