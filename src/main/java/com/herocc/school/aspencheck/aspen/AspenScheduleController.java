@@ -12,35 +12,45 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 @RestController
+@RequestMapping("aspen")
 public class AspenScheduleController extends GenericRestController {
   private Schedule schedule;
   
-  @RequestMapping("/aspen/schedule")
-  public Schedule getSchedule(@RequestHeader(value="ASPEN_UNAME", required=false) String u,
-                              @RequestHeader(value="ASPEN_PASS", required=false) String p){
-    
-    final String username = (u == null ? AspenCheck.username : u);
-    final String password = (p == null ? AspenCheck.password : p);
+  @RequestMapping("schedule")
+  public Schedule restScheduleHandler(@RequestHeader(value="ASPEN_UNAME", required=false) String u,
+                                      @RequestHeader(value="ASPEN_PASS", required=false) String p){
+  
+    if (u != null && p != null) return getSchedule(u, p);
     
     if (System.currentTimeMillis() / 1000 > getNextRefreshTime()) {
-      AspenCheck.log.log(Level.FINE, "Refreshing Aspen Schedule, " + System.currentTimeMillis() / 1000 + " > " + getNextRefreshTime());
-      new Thread(() -> refreshSchedule(username, password)).start();
+      AspenCheck.log.log(Level.INFO, "Refreshing Aspen Schedule, " + System.currentTimeMillis() / 1000 + " > " + getNextRefreshTime());
+      new Thread(this::refreshSchedule).start();
     }
     return schedule;
   }
   
   @Cacheable("publicSchedule")
   @CacheEvict(value = "publicSchedule", allEntries=true)
-  public Schedule refreshSchedule(String username, String password) {
+  public Schedule refreshSchedule() {
+    schedule = getSchedule(AspenCheck.username, AspenCheck.password);
+    refreshTime = System.currentTimeMillis() / 1000;
+    return schedule;
+  }
+  
+  public Schedule getSchedule(String username, String password) {
     AspenWebFetch aspenWebFetch = new AspenWebFetch(username, password);
     if (aspenWebFetch.schedulePage != null) {
       try {
-        refreshTime = System.currentTimeMillis() / 1000;
-        schedule = new Schedule(aspenWebFetch.schedulePage.parse());
+        return schedule = new Schedule(aspenWebFetch.schedulePage.parse());
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
-    return schedule;
+    return null;
+  }
+  
+  @Override
+  protected void refresh() {
+    refreshSchedule();
   }
 }

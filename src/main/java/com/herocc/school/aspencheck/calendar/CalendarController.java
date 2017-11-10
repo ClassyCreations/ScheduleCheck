@@ -13,16 +13,17 @@ import java.util.List;
 import java.util.logging.Level;
 
 @RestController
+@RequestMapping("/announcements")
 public class CalendarController extends GenericRestController {
   List<Event> events = new ArrayList<>();
   
   @Getter private List<Event> schoolEventsList = new ArrayList<>();
   @Getter private List<Event> hsAnnouncementsList = new ArrayList<>();
   
-  @RequestMapping("/announcements")
+  @RequestMapping()
   public List<Event> getEvents() {
     if (System.currentTimeMillis() / 1000 > getNextRefreshTime()) {
-      AspenCheck.log.log(Level.FINE, "Refreshing announcements, ");
+      AspenCheck.log.log(Level.INFO, "Refreshing announcements, " + String.valueOf(System.currentTimeMillis() / 1000 + " > " + getNextRefreshTime()));
       new Thread(() -> {
         List<Event> tmp = new ArrayList<>();
         tmp.addAll(refreshSchoolCal());
@@ -35,14 +36,14 @@ public class CalendarController extends GenericRestController {
   }
   
   @Cacheable("schoolCalEvents")
-  @RequestMapping("/announcements/district")
+  @RequestMapping("district")
   public List<Event> getSchoolEvents() {
     getEvents(); // Just to refresh cache
     return getSchoolEventsList();
   }
   
   @Cacheable("hsAnnouncements")
-  @RequestMapping("/announcements/hs")
+  @RequestMapping("hs")
   public List<Event> getHsAnnouncements() {
     getEvents(); // Just to refresh cache
     return getHsAnnouncementsList();
@@ -72,5 +73,10 @@ public class CalendarController extends GenericRestController {
       e.printStackTrace();
     }
     return hsAnnouncementsList;
+  }
+  
+  @Override
+  protected void refresh() {
+    getEvents();
   }
 }
