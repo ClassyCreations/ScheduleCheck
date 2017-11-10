@@ -16,7 +16,8 @@ working/
 ## Plugin-specific files:
 
 # IntelliJ
-/out/
+out/
+classes/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
