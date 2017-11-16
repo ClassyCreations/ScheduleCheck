@@ -1,6 +1,6 @@
 package com.herocc.school.aspencheck;
 
-import com.herocc.school.aspencheck.aspen.Schedule;
+import com.herocc.school.aspencheck.aspen.schedule.Schedule;
 import org.jsoup.Jsoup;
 import org.junit.Test;
 

@@ -3,6 +3,7 @@ package com.herocc.school.aspencheck.aspen;
 import com.herocc.school.aspencheck.AspenCheck;
 import com.herocc.school.aspencheck.Configs;
 import com.herocc.school.aspencheck.GenericWebFetch;
+import com.herocc.school.aspencheck.InvalidCredentialsException;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -12,16 +13,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AspenWebFetch extends GenericWebFetch {
-  public Connection.Response schedulePage;
-  
   public AspenWebFetch(String username, String password) {
     this.login(username, password);
-    this.schedulePage = getSchedulePage();
   }
   
-  private Connection.Response getSchedulePage() {
+  public Connection.Response getClassListPage() {
     try {
-      return getPage("https://ma-melrose.myfollett.com/aspen/studentScheduleContextList.do?navkey=myInfo.sch.list");
+      return getPage(Configs.aspenBaseUrl + "/portalClassList.do?navkey=academics.classes.list&maximized=true");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+  
+  public Connection.Response getSchedulePage() {
+    try {
+      return getPage(Configs.aspenBaseUrl + "/studentScheduleContextList.do?navkey=myInfo.sch.list");
     } catch (HttpStatusException e) {
       if (e.getStatusCode() == 404 || e.getStatusCode() == 500) {
         AspenCheck.log.warning("This login doesn't have a schedule page!");
@@ -34,9 +41,9 @@ public class AspenWebFetch extends GenericWebFetch {
     return null;
   }
   
-  private Connection.Response login(String username, String password) {
+  public Connection.Response login(String username, String password) {
     try {
-      String loginUrl = "https://ma-melrose.myfollett.com/aspen/logon.do";
+      String loginUrl = Configs.aspenBaseUrl + "/logon.do";
       Connection.Response loginPageResponse =
               Jsoup.connect(loginUrl)
                       .userAgent(Configs.WEB_USER_AGENT)
@@ -55,8 +62,7 @@ public class AspenWebFetch extends GenericWebFetch {
       mapParams.put("mobile", "false");
       
       if (username == null || password == null) {
-        AspenCheck.log.warning("Username or Password not specified! Continuing anyway, but stuff will be broken...");
-        return null;
+        throw new InvalidCredentialsException("Unspecified Username or Password");
       }
       
       Connection.Response responsePostLogin = Jsoup.connect(loginUrl)
@@ -71,6 +77,9 @@ public class AspenWebFetch extends GenericWebFetch {
       Map<String, String> mapLoggedInCookies = responsePostLogin.cookies();
       demCookies.putAll(mapLoggedInCookies);
       demCookies.putAll(mapLoginPageCookies);
+  
+      if (responsePostLogin.statusCode() == 500) throw new InvalidCredentialsException("Username or Pass incorrect");
+      
       return responsePostLogin;
     } catch (IOException e) {
       e.printStackTrace();

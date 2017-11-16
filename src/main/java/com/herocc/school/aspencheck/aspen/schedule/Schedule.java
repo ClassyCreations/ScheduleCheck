@@ -1,4 +1,4 @@
-package com.herocc.school.aspencheck.aspen;
+package com.herocc.school.aspencheck.aspen.schedule;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.herocc.school.aspencheck.TimestampedObject;

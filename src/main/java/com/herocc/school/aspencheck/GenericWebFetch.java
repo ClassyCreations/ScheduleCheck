@@ -18,6 +18,16 @@ public class GenericWebFetch {
 							.followRedirects(true)
 							.execute();
 	}
+  
+  public Connection.Response getPage(String url, Map<String, String> formData) throws IOException {
+    return Jsoup.connect(url)
+      .userAgent(Configs.WEB_USER_AGENT)
+      .timeout(10 * 1000)
+      .data(formData)
+      .cookies(demCookies)
+      .followRedirects(true)
+      .execute();
+  }
 	
 	public static String getURL(String url) {
 		GenericWebFetch g = new GenericWebFetch();

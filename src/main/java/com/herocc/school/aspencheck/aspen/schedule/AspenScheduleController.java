@@ -1,9 +1,13 @@
-package com.herocc.school.aspencheck.aspen;
+package com.herocc.school.aspencheck.aspen.schedule;
 
 import com.herocc.school.aspencheck.AspenCheck;
-import com.herocc.school.aspencheck.GenericRestController;
+import com.herocc.school.aspencheck.aspen.AspenRestController;
+import com.herocc.school.aspencheck.aspen.AspenWebFetch;
+import org.jsoup.Connection;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,20 +17,20 @@ import java.util.logging.Level;
 
 @RestController
 @RequestMapping("aspen")
-public class AspenScheduleController extends GenericRestController {
+public class AspenScheduleController extends AspenRestController {
   private Schedule schedule;
   
   @RequestMapping("schedule")
-  public Schedule restScheduleHandler(@RequestHeader(value="ASPEN_UNAME", required=false) String u,
-                                      @RequestHeader(value="ASPEN_PASS", required=false) String p){
+  public ResponseEntity<Schedule> restScheduleHandler(@RequestHeader(value="ASPEN_UNAME", required=false) String u,
+                                                      @RequestHeader(value="ASPEN_PASS", required=false) String p){
   
-    if (u != null && p != null) return getSchedule(u, p);
+    if (u != null && p != null) return new ResponseEntity<>(getSchedule(u, p), HttpStatus.OK);
     
     if (AspenCheck.getUnixTime() > getNextRefreshTime()) {
       AspenCheck.log.log(Level.INFO, "Refreshing Aspen Schedule, " + String.valueOf(AspenCheck.getUnixTime() + " > " + getNextRefreshTime()));
       new Thread(this::refresh).start();
     }
-    return schedule;
+    return new ResponseEntity<>(schedule, HttpStatus.OK);
   }
   
   @Cacheable("publicSchedule")
@@ -39,9 +43,10 @@ public class AspenScheduleController extends GenericRestController {
   
   public Schedule getSchedule(String username, String password) {
     AspenWebFetch aspenWebFetch = new AspenWebFetch(username, password);
-    if (aspenWebFetch.schedulePage != null) {
+    Connection.Response schedulePage = aspenWebFetch.getSchedulePage();
+    if (schedulePage != null) {
       try {
-        return schedule = new Schedule(aspenWebFetch.schedulePage.parse());
+        return schedule = new Schedule(schedulePage.parse());
       } catch (IOException e) {
         e.printStackTrace();
       }

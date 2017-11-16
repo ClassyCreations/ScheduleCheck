@@ -17,7 +17,7 @@ working/
 
 # IntelliJ
 out/
-classes/
+/classes/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
