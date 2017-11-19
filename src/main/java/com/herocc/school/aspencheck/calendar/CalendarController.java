@@ -4,6 +4,8 @@ import com.herocc.school.aspencheck.*;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,14 +20,14 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/{district-id}/announcements")
+@RequestMapping("/{district-id}/announcements")
 public class CalendarController {
   
   @RequestMapping()
-  public List<Event> serveEvents(@PathVariable("district-id") String district) {
+  public ResponseEntity<List<Event>> serveEvents(@PathVariable("district-id") String district) {
     District d = AspenCheck.config.districts.get(district);
     d.refresh();
-    return d.events;
+    return new ResponseEntity<>(d.events, HttpStatus.OK);
   }
   
   public static void refreshEvents(District d) {
