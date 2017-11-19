@@ -1,10 +1,9 @@
 package com.herocc.school.aspencheck;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 
 @AllArgsConstructor
-public class JSONReturn {
-  public ResponseEntity data;
+public class JSONReturn extends TimestampedObject {
+  public Object data;
   public ErrorInfo errors;
 }

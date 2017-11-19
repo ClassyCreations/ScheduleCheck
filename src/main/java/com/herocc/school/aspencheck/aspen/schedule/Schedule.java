@@ -1,7 +1,6 @@
 package com.herocc.school.aspencheck.aspen.schedule;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.herocc.school.aspencheck.TimestampedObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Schedule extends TimestampedObject {
+public class Schedule {
   private Document schedPage;
   
   public int day = 0;

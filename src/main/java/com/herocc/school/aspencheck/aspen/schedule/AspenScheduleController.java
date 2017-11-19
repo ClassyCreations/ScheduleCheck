@@ -18,15 +18,15 @@ import java.io.IOException;
 public class AspenScheduleController {
   
   @RequestMapping("schedule")
-  public JSONReturn serveSchedule(@PathVariable(value="district-id", required=false) String district,
+  public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id", required=false) String district,
                                   @RequestHeader(value="ASPEN_UNAME", required=false) String u,
                                   @RequestHeader(value="ASPEN_PASS", required=false) String p){
     
     District d = AspenCheck.config.districts.get(district);
     d.refresh();
     
-    if (u != null && p != null) return new JSONReturn(new ResponseEntity<>(getSchedule(district, u, p), HttpStatus.OK), new ErrorInfo());
-    return new JSONReturn(new ResponseEntity<>(d.schedule, HttpStatus.OK), new ErrorInfo());
+    if (u != null && p != null) return new ResponseEntity<>(new JSONReturn(getSchedule(d.districtName, u, p), new ErrorInfo()), HttpStatus.OK);
+    return new ResponseEntity<>(new JSONReturn(d.schedule, new ErrorInfo()), HttpStatus.OK);
   }
   
   public static void refreshSchedule(District d) {

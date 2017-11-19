@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -24,10 +23,10 @@ import java.util.List;
 public class CalendarController {
   
   @RequestMapping()
-  public JSONReturn serveEvents(@PathVariable("district-id") String district) {
+  public ResponseEntity<JSONReturn> serveEvents(@PathVariable("district-id") String district) {
     District d = AspenCheck.config.districts.get(district);
     d.refresh();
-    return new JSONReturn(new ResponseEntity<>(d.events, HttpStatus.OK), new ErrorInfo());
+    return new ResponseEntity<>(new JSONReturn(d.events, new ErrorInfo()), HttpStatus.OK);
   }
   
   public static void refreshEvents(District d) {
