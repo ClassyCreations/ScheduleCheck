@@ -52,3 +52,16 @@ blossom {
   def constants = 'src/main/java/' + group + '/Constants.java'
   replaceToken '@@VERSION@@', version, constants
 }
+
+task stage(type: Copy, dependsOn: [clean, build]) {
+  from shadowJar.archivePath
+  into project.rootDir
+  rename {
+    'app.jar'
+  }
+}
+stage.mustRunAfter(clean)
+
+clean << {
+  project.file('app.jar').delete()
+}
