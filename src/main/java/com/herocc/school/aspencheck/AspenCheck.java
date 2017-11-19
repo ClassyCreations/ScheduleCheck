@@ -33,7 +33,7 @@ public class AspenCheck {
 	}
 	
 	public static String getEnvFromKey(String key) {
-    return System.getenv(key.replace("${", "").replace("}", ""));
+    return (key.startsWith("${") && key.endsWith("}")) ? System.getenv(key.replace("${", "").replace("}", "")) : key;
   }
 	
 	private static void handleConfigFile() throws IOException {
