@@ -18,7 +18,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/{district-id}/announcements")
+@RequestMapping("/api/v1/{district-id}/announcements")
 public class CalendarController {
   
   @RequestMapping()

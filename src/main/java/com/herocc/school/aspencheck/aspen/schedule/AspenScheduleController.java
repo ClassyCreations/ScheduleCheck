@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/{district-id}/aspen")
+@RequestMapping("/api/v1/{district-id}/aspen")
 public class AspenScheduleController {
   
   @RequestMapping("schedule")
