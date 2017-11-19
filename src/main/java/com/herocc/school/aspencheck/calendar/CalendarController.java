@@ -24,10 +24,10 @@ import java.util.List;
 public class CalendarController {
   
   @RequestMapping()
-  public ResponseEntity<List<Event>> serveEvents(@PathVariable("district-id") String district) {
+  public JSONReturn serveEvents(@PathVariable("district-id") String district) {
     District d = AspenCheck.config.districts.get(district);
     d.refresh();
-    return new ResponseEntity<>(d.events, HttpStatus.OK);
+    return new JSONReturn(new ResponseEntity<>(d.events, HttpStatus.OK), new ErrorInfo());
   }
   
   public static void refreshEvents(District d) {
