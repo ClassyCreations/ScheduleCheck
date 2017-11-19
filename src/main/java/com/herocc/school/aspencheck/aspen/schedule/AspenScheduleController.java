@@ -2,6 +2,8 @@ package com.herocc.school.aspencheck.aspen.schedule;
 
 import com.herocc.school.aspencheck.AspenCheck;
 import com.herocc.school.aspencheck.District;
+import com.herocc.school.aspencheck.ErrorInfo;
+import com.herocc.school.aspencheck.JSONReturn;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
 import org.jsoup.Connection;
 import org.springframework.http.HttpStatus;
@@ -16,15 +18,15 @@ import java.io.IOException;
 public class AspenScheduleController {
   
   @RequestMapping("schedule")
-  public ResponseEntity<Schedule> serveSchedule(@PathVariable(value="district-id", required=false) String district,
-                                                      @RequestHeader(value="ASPEN_UNAME", required=false) String u,
-                                                      @RequestHeader(value="ASPEN_PASS", required=false) String p){
+  public JSONReturn serveSchedule(@PathVariable(value="district-id", required=false) String district,
+                                  @RequestHeader(value="ASPEN_UNAME", required=false) String u,
+                                  @RequestHeader(value="ASPEN_PASS", required=false) String p){
     
     District d = AspenCheck.config.districts.get(district);
     d.refresh();
-  
-    if (u != null && p != null) return new ResponseEntity<>(getSchedule(district, u, p), HttpStatus.OK);
-    return new ResponseEntity<>(d.schedule, HttpStatus.OK);
+    
+    if (u != null && p != null) return new JSONReturn(new ResponseEntity<>(getSchedule(district, u, p), HttpStatus.OK), new ErrorInfo());
+    return new JSONReturn(new ResponseEntity<>(d.schedule, HttpStatus.OK), new ErrorInfo());
   }
   
   public static void refreshSchedule(District d) {
