@@ -1,85 +1,58 @@
 package com.herocc.school.aspencheck;
 
-import net.fortuna.ical4j.data.CalendarBuilder;
-import net.fortuna.ical4j.data.ParserException;
-import net.fortuna.ical4j.model.Calendar;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rollbar.notifier.Rollbar;
+import com.rollbar.notifier.config.Config;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.util.List;
+import java.io.InputStreamReader;
 import java.util.TimeZone;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import static com.rollbar.notifier.config.ConfigBuilder.withAccessToken;
 
 @EnableCaching
 @SpringBootApplication
 public class AspenCheck {
 	public static final Logger log = Logger.getLogger(AspenCheck.class.getName());
 	public static final TimeZone timezone = TimeZone.getTimeZone("America/New_York");
-	
-	public static String username;
-	public static String password;
-	
-	public static void main(String[] args) {
-		TimeZone.setDefault(timezone);
-    getLoginDetails();
-		SpringApplication.run(AspenCheck.class, args);
-	}
-	
-	/**
-	 * Gets the login Username and Password
-	 * Priority: Params, Env, File, Testing
-	 */
-	private static void getLoginDetails() {
-		if (username == null || password == null) {
-			if (System.getenv("ASPEN_UNAME") != null && System.getenv("ASPEN_PASS") != null) {
-				username = System.getenv("ASPEN_UNAME");
-				password = System.getenv("ASPEN_PASS");
-			} else {
-				// File Check
-				File credsFile = new File(System.getProperty("user.dir") + "creds.txt");
-				if (credsFile.canRead()) {
-					log.fine("Using credentials file: " + credsFile.getPath());
-					try {
-            List<String> lines = Files.readAllLines(credsFile.toPath());
-            if (lines.get(0) != null && username == null) {
-              username = lines.get(0);
-            }
-            if (lines.get(1) != null && password == null) {
-              password = lines.get(1);
-            }
-          } catch (IOException e) {
-					  AspenCheck.log.warning("Unable to parse creds.txt file, may not be able to cope!");
-					  e.printStackTrace();
-          }
-				}
-			}
-		}
-	}
   
-  /**
-   * Gets a Calendar object from a given URL
-   * @param url URL of the iCal File
-   * @return Calendar object
-   * @throws IOException if unable to fetch URL
-   */
-  public static Calendar getICal(String url) throws IOException {
-    URLConnection c = new URL(url).openConnection();
-    c.setRequestProperty("User-Agent", Configs.WEB_USER_AGENT);
+  public static Rollbar rollbar;
+  public static Configs config;
+	
+	public static void main(String[] args) throws IOException {
+    initRollbar();
+    TimeZone.setDefault(timezone);
+    handleConfigFile();
+    SpringApplication.run(AspenCheck.class, args);
+	}
+	
+	public static String getEnvFromKey(String key) {
+    return System.getenv(key.replace("${", "").replace("}", ""));
+  }
+	
+	private static void handleConfigFile() throws IOException {
+    String result = new BufferedReader(new InputStreamReader(AspenCheck.class.getResourceAsStream("/config.json")))
+      .lines().collect(Collectors.joining("\n"));
+	  
+    ObjectMapper mapper = new ObjectMapper();
+    config = mapper.readValue(result, Configs.class);
+  }
+  
+  private static void initRollbar() {
+    String env = System.getenv("devEnvironment");
+    if (env == null || env.trim().equals("")) env = "development";
     
-    try (InputStream is = c.getInputStream()) {
-      return new CalendarBuilder().build(is);
-    } catch (ParserException e) {
-			AspenCheck.log.warning("Unable to parse iCal from " + url);
-      e.printStackTrace();
-    }
-    return null;
+    Config rollbarConfig = withAccessToken("53677a64a458455dbb31d2096a4b38ad")
+      .codeVersion(Constants.VERSION)
+      .environment(env)
+      .build();
+    rollbar = Rollbar.init(rollbarConfig);
   }
   
   public static long getUnixTime() {

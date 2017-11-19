@@ -1,82 +1,63 @@
 package com.herocc.school.aspencheck.calendar;
 
 import com.herocc.school.aspencheck.*;
-import lombok.Getter;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Calendar;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 @RestController
-@RequestMapping("/announcements")
-public class CalendarController extends GenericRestController {
-  List<Event> announcements = new ArrayList<>();
-  
-  @Getter private List<Event> schoolEventsList = new ArrayList<>();
-  @Getter private List<Event> hsAnnouncementsList = new ArrayList<>();
+@RequestMapping("/{district-id}/announcements")
+public class CalendarController {
   
   @RequestMapping()
-  public List<Event> getEvents() {
-    if (AspenCheck.getUnixTime() > getNextRefreshTime()) {
-      AspenCheck.log.log(Level.INFO, "Refreshing announcements, " + String.valueOf(AspenCheck.getUnixTime() + " > " + getNextRefreshTime()));
-      new Thread(() -> {
-        List<Event> tmp = new ArrayList<>();
-        tmp.addAll(refreshSchoolCal());
-        tmp.addAll(refreshHsAnnouncements());
-        announcements = tmp;
-        lastRefreshTimestamp = AspenCheck.getUnixTime();
-      }).start();
+  public List<Event> serveEvents(@PathVariable("district-id") String district) {
+    District d = AspenCheck.config.districts.get(district);
+    d.refresh();
+    return d.events;
+  }
+  
+  public static void refreshEvents(District d) {
+    ArrayList<Event> eventList = new ArrayList<>();
+    for (String url : d.announcementsSources.get(GenericEventGenerator.SourceType.ical)){
+      eventList.addAll(new ICalendar(getICal(url)).getEvents(true));
     }
-    return announcements;
+    for (String url : d.announcementsSources.get(GenericEventGenerator.SourceType.csv)){
+      eventList.addAll(new CSVParse(GenericWebFetch.getURL(url)).getEvents(true));
+    }
+    d.events = eventList;
   }
   
-  @Cacheable("schoolCalEvents")
-  @RequestMapping("district")
-  public List<Event> getSchoolEvents() {
-    getEvents(); // Just to refresh cache
-    return getSchoolEventsList();
-  }
-  
-  @Cacheable("hsAnnouncements")
-  @RequestMapping("hs")
-  public List<Event> getHsAnnouncements() {
-    getEvents(); // Just to refresh cache
-    return getHsAnnouncementsList();
-  }
-  
-  
-  @CacheEvict(value = "schoolCalEvents", allEntries = true)
-  public List<Event> refreshSchoolCal() {
-    List<Event> calEvents = new ArrayList<>();
+  /**
+   * Gets a Calendar object from a given URL
+   * @param url URL of the iCal File
+   * @return Calendar object
+   */
+  public static Calendar getICal(String url) {
     try {
-      calEvents.addAll(new ICalendar(AspenCheck.getICal(Configs.districtCalUrl)).getEvents(true));
-      schoolEventsList = calEvents;
+      URLConnection c = new URL(url).openConnection();
+      c.setRequestProperty("User-Agent", AspenCheck.config.webUserAgent);
+      
+      try (InputStream is = c.getInputStream()) {
+        return new CalendarBuilder().build(is);
+      } catch (ParserException e) {
+        AspenCheck.log.warning("Unable to parse iCal from " + url);
+        e.printStackTrace();
+        AspenCheck.rollbar.error(e, "Error parsing iCal from " + url);
+      }
     } catch (IOException e) {
       e.printStackTrace();
+      AspenCheck.rollbar.error(e, "Unable to fetch iCal from " + url);
     }
-    return schoolEventsList;
-  }
-  
-  @CacheEvict(value = "hsAnnouncements", allEntries = true)
-  public List<Event> refreshHsAnnouncements() {
-    List<Event> hsAnns = new ArrayList<>();
-    try {
-      hsAnns.addAll(new ICalendar(AspenCheck.getICal(Configs.hsCalUrl)).getEvents(true));
-      hsAnns.addAll(new CSVParse(GenericWebFetch.getURL(Configs.hsFormUrl)).getEvents(true));
-      hsAnnouncementsList = hsAnns;
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return hsAnnouncementsList;
-  }
-  
-  @Override
-  protected void refresh() {
-    getEvents();
+    return null;
   }
 }

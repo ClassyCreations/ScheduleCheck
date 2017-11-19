@@ -13,15 +13,17 @@ import java.util.regex.Pattern;
 public class Schedule extends TimestampedObject {
   private Document schedPage;
   
-  public int day;
-  @JsonIgnore public String currentClass;
-  public boolean classInSession;
-  public String block;
-  public String advisoryBlock;
-  public int blockOfDay;
-  public ArrayList<String> blockOrder;
+  public int day = 0;
+  @JsonIgnore public String currentClass = "Z";
+  public boolean classInSession = false;
+  public String block = "Z";
+  public String advisoryBlock = "Z";
+  public int blockOfDay = 0;
+  public ArrayList<String> blockOrder = new ArrayList<>();
   
-  public Schedule(Document schedPage){
+  public Schedule(Document schedPage) {
+    if (schedPage == null) return;
+    
     this.schedPage = schedPage;
     this.day = getDay();
     this.currentClass = getCurrentClass();

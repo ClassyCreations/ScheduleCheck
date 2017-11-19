@@ -12,7 +12,7 @@ public class GenericWebFetch {
 	
 	public Connection.Response getPage(String url) throws IOException {
 			return Jsoup.connect(url)
-							.userAgent(Configs.WEB_USER_AGENT)
+							.userAgent(AspenCheck.config.webUserAgent)
 							.timeout(10 * 1000)
 							.cookies(demCookies)
 							.followRedirects(true)
@@ -21,7 +21,7 @@ public class GenericWebFetch {
   
   public Connection.Response getPage(String url, Map<String, String> formData) throws IOException {
     return Jsoup.connect(url)
-      .userAgent(Configs.WEB_USER_AGENT)
+      .userAgent(AspenCheck.config.webUserAgent)
       .timeout(10 * 1000)
       .data(formData)
       .cookies(demCookies)

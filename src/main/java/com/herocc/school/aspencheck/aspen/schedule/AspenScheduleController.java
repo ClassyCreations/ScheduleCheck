@@ -1,61 +1,49 @@
 package com.herocc.school.aspencheck.aspen.schedule;
 
 import com.herocc.school.aspencheck.AspenCheck;
-import com.herocc.school.aspencheck.aspen.AspenRestController;
+import com.herocc.school.aspencheck.District;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
 import org.jsoup.Connection;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 @RestController
-@RequestMapping("aspen")
-public class AspenScheduleController extends AspenRestController {
-  private Schedule schedule;
+@RequestMapping("/{district-id}/aspen")
+public class AspenScheduleController {
   
   @RequestMapping("schedule")
-  public ResponseEntity<Schedule> restScheduleHandler(@RequestHeader(value="ASPEN_UNAME", required=false) String u,
+  public ResponseEntity<Schedule> serveSchedule(@PathVariable(value="district-id", required=false) String district,
+                                                      @RequestHeader(value="ASPEN_UNAME", required=false) String u,
                                                       @RequestHeader(value="ASPEN_PASS", required=false) String p){
-  
-    if (u != null && p != null) return new ResponseEntity<>(getSchedule(u, p), HttpStatus.OK);
     
-    if (AspenCheck.getUnixTime() > getNextRefreshTime()) {
-      AspenCheck.log.log(Level.INFO, "Refreshing Aspen Schedule, " + String.valueOf(AspenCheck.getUnixTime() + " > " + getNextRefreshTime()));
-      new Thread(this::refresh).start();
-    }
-    return new ResponseEntity<>(schedule, HttpStatus.OK);
+    District d = AspenCheck.config.districts.get(district);
+    d.refresh();
+  
+    if (u != null && p != null) return new ResponseEntity<>(getSchedule(district, u, p), HttpStatus.OK);
+    return new ResponseEntity<>(d.schedule, HttpStatus.OK);
   }
   
-  @Cacheable("publicSchedule")
-  @CacheEvict(value = "publicSchedule", allEntries=true)
-  public Schedule refreshSchedule() {
-    schedule = getSchedule(AspenCheck.username, AspenCheck.password);
-    lastRefreshTimestamp = System.currentTimeMillis() / 1000;
-    return schedule;
+  public static void refreshSchedule(District d) {
+    d.schedule = getSchedule(d.districtName, d.aspenUsername, d.aspenPassword);
   }
   
-  public Schedule getSchedule(String username, String password) {
-    AspenWebFetch aspenWebFetch = new AspenWebFetch(username, password);
+  public static Schedule getSchedule(String districtName, String username, String password) {
+    AspenWebFetch aspenWebFetch = new AspenWebFetch(districtName, username, password);
     Connection.Response schedulePage = aspenWebFetch.getSchedulePage();
     if (schedulePage != null) {
       try {
-        return schedule = new Schedule(schedulePage.parse());
+        return new Schedule(schedulePage.parse());
       } catch (IOException e) {
         e.printStackTrace();
+        AspenCheck.rollbar.error(e, "Error while parsing SchedulePage of " + districtName);
       }
     }
     return null;
-  }
-  
-  @Override
-  protected void refresh() {
-    refreshSchedule();
   }
 }
