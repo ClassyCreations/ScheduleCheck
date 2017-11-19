@@ -54,7 +54,7 @@ blossom {
 }
 
 task stage(type: Copy, dependsOn: [clean, build]) {
-  from shadowJar.archivePath
+  from jar.archivePath
   into project.rootDir
   rename {
     'app.jar'
