@@ -1,0 +1,20 @@
+{
+  "refreshInterval": 120,
+  "webUserAgent": "ScheduleCheck Bot",
+
+  "districts": {
+    "ma-melrose": {
+      "districtName": "ma-melrose",
+      "aspenBaseUrl": "https://ma-melrose.myfollett.com/aspen",
+      "aspenUsername": "${MA_MELROSE_ASPEN_UNAME}",
+      "aspenPassword": "${MA_MELROSE_ASPEN_PASS}",
+      "announcementsSources": {
+        "csv": ["https://docs.google.com/spreadsheet/ccc?key=1C_Rmk0act0Q8VHdjeh0TAsmfbWtvK_P9z25U-7BJW78&output=csv"],
+        "ical": [
+          "http://melroseschools.com/calendar/today/?ical=1&tribe_display=day&tribe_eventcategory=149",
+          "https://calendar.google.com/calendar/ical/melroseschools.com_0iitdti0rfgbgc4un9vf8520bc@group.calendar.google.com/public/full.ics"
+        ]
+      }
+    }
+  }
+}

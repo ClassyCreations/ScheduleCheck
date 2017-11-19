@@ -2,10 +2,12 @@ plugins {
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '1.2.4'
+    id 'org.springframework.boot' version '1.5.8.RELEASE'
+    id 'ninja.miserable.blossom' version "1.0.1"
 }
 
 group 'com.herocc.school.aspencheck'
-version '1.5-SNAPSHOT'
+version '3.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 mainClassName = group + ".AspenCheck"
@@ -16,15 +18,15 @@ repositories {
 
 dependencies {
     compile 'org.jsoup:jsoup:1.10.2' // Web Parser
-    compile 'com.beust:jcommander:1.48' // Command line args parser
-    compile 'org.glassfish:javax.json:1.0.4' // Json Library
     compile 'org.mnode.ical4j:ical4j:2.0.2' // iCal parser
-    compile 'org.slf4j:slf4j-nop:1.7.25' // Needed so iCal stops yelling about logs
     compile 'org.apache.commons:commons-csv:1.4' // Parsing CSV Files
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'com.rollbar:rollbar-java:1.0.0-beta-3'
 
     compileOnly 'org.projectlombok:lombok:1.16.18' // Lombok Library
 
     testCompile group: 'junit', name: 'junit', version: '4.12' // Test Suite
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
 
 artifacts {
@@ -44,4 +46,9 @@ jar {
                 'Version': version
         )
     }
+}
+
+blossom {
+  def constants = 'src/main/java/' + group + '/Constants.java'
+  replaceToken '@@VERSION@@', version, constants
 }

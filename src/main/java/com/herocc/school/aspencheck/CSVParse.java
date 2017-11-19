@@ -25,29 +25,41 @@ public class CSVParse extends GenericEventGenerator {
     String description = "";
     
     final String shortDesc = record.get(2).trim();
-    final String occurring = record.get(3);
-    final String startTime = record.get(4);
+    final String occurring = record.get(3).trim();
+    final String startTime = record.get(4).trim();
     final String location  = record.get(5).trim();
-    final String cost      = record.get(6);
-    final String contact   = record.get(7);
+    final String cost      = record.get(6).trim();
+    final String contact   = record.get(7).trim();
     
     //if (!shortDesc.toLowerCase().startsWith("a") || !shortDesc.toLowerCase().startsWith("an")) description += "a ";
-    description += shortDesc;
+    description += shortDesc.trim();
     
-    // Location / Date / Time occurring
-    description += " in ";
-    if (!location.toLowerCase().startsWith("room")) description += "the ";
-    description += location + " on " + occurring + " at " + startTime;
-    
-    // Cost
-    try {
-      if (cost != null && Integer.parseInt(cost) != 0) description += " costing $" + cost;
-    } catch (NumberFormatException numberException) {
-      AspenCheck.log.warning("Unable to parse cost " + cost);
+    /*
+    if (!location.equals("")) {
+      description += " in " + location;
     }
     
-    // Contact person
-    description += ", contact " + contact + " for more information";
+    if (!occurring.equals("")) {
+      description += " on " + occurring;
+    }
+    
+    if (!startTime.equals("")) {
+      description += " at " + startTime;
+    }
+    
+    if (!cost.equals("")) {
+      if (Integer.parseInt(cost) != 0) description += " costing $" + cost;
+    }
+    */
+    
+    if (!contact.equals("")) {
+      if (description.trim().endsWith(".") || description.trim().endsWith("!")) {
+        description += " Contact ";
+      } else {
+        description += " contact ";
+      }
+      description += contact + " for more information";
+    }
     
     return description;
   }
@@ -62,13 +74,13 @@ public class CSVParse extends GenericEventGenerator {
         Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(new StringReader(csv));
         for (CSVRecord record : records) {
           Event e = new Event();
-          boolean invalidRecord = false;
-          for (int i = 0; i < 9; i++) { // Number should be number of rows starting at 0 that shouldn't be blank
-            if (record.get(i) == null || record.get(i).isEmpty()) invalidRecord = true;
+          try {
+            e.setTitle(record.get(1));
+            e.setDescription(buildDescString(record));
+          } catch (Exception exc) {
+            AspenCheck.log.warning("Error while parsing event: " + e.getTitle());
+            continue;
           }
-          if (invalidRecord) continue; // If the record is missing information, skip it
-          e.setTitle(record.get(1));
-          e.setDescription(buildDescString(record));
     
           LocalDateTime dtStart = LocalDateTime.MIN;
           LocalDateTime dtEnd = LocalDateTime.MIN;
@@ -100,6 +112,7 @@ public class CSVParse extends GenericEventGenerator {
       } catch (NullPointerException npe) {
         AspenCheck.log.warning("Error getting events from CSV, is it publicly readable and correctly formatted?");
         npe.printStackTrace();
+        AspenCheck.rollbar.error(npe, "Error getting events from CSV, is it publicly readable and correctly formatted?");
       }
     } catch (IOException e) {
       return events;

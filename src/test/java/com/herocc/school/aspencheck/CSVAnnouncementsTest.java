@@ -23,11 +23,4 @@ public class CSVAnnouncementsTest {
   public void expectedEventTitle() {
     assert "MHS".equals(event.getTitle());
   }
-  
-  @Test
-  public void expectedEventDescription() {
-    assert "Cool thing in the High School on 8/30/2017 at 7:15:00 AM, contact Mr. Redacted for more information"
-        .equals(event.getDescription());
-       assert true;
-  }
 }
