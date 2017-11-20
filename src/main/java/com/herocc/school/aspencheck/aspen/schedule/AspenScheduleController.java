@@ -18,7 +18,7 @@ import java.io.IOException;
 public class AspenScheduleController {
   
   @RequestMapping("schedule")
-  public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id", required=false) String district,
+  public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id") String district,
                                   @RequestHeader(value="ASPEN_UNAME", required=false) String u,
                                   @RequestHeader(value="ASPEN_PASS", required=false) String p){
     
