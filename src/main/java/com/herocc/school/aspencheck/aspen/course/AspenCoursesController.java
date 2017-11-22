@@ -19,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/{district-id}/aspen")
 public class AspenCoursesController {
+  private static AspenWebFetch a;
   
   @RequestMapping("/course")
   public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id") String district,
@@ -34,9 +35,26 @@ public class AspenCoursesController {
     }
   }
   
+  @RequestMapping("/course/{course-id}")
+  public ResponseEntity<JSONReturn> serveCourseInfo(@PathVariable(value="district-id") String district,
+                                                    @PathVariable(value="course-id") String course,
+                                                    @RequestHeader(value="ASPEN_UNAME", required=false) String u,
+                                                    @RequestHeader(value="ASPEN_PASS", required=false) String p){
+    
+    District d = AspenCheck.config.districts.get(district);
+  
+    if (u != null && p != null) {
+      a = new AspenWebFetch(d.districtName, u, p);
+      Course c = getCourse(d.districtName, course, u, p).getMoreInformation(a);
+      if (c == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new JSONReturn(null, new ErrorInfo("j", 9, "b")));
+      return new ResponseEntity<>(new JSONReturn(getCourse(d.districtName, course, u, p), new ErrorInfo()), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(new JSONReturn(null, new ErrorInfo("Invalid Credentials", 0, "No username or password given")), HttpStatus.UNAUTHORIZED);
+    }
+  }
+  
   public static List<Course> getCourses(String districtName, String username, String password) {
-    AspenWebFetch aspenWebFetch = new AspenWebFetch(districtName, username, password);
-    Connection.Response classListPage = aspenWebFetch.getClassListPage();
+    Connection.Response classListPage = a.getClassListPage();
     List<Course> courses = new ArrayList<>();
     if (classListPage != null) {
       try {
@@ -49,5 +67,15 @@ public class AspenCoursesController {
       }
     }
     return courses;
+  }
+  
+  public static Course getCourse(String districtName, String courseId, String username, String password) {
+    List<Course> enrolledCourses = getCourses(districtName, username, password);
+  
+    for (Course c : enrolledCourses) {
+      if (c.id.equalsIgnoreCase(courseId) || c.code.equalsIgnoreCase(courseId) || c.name.equalsIgnoreCase(courseId))
+        return c.getMoreInformation(a);
+    }
+    return null;
   }
 }

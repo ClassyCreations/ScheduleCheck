@@ -1,6 +1,8 @@
 package com.herocc.school.aspencheck.aspen;
 
-import com.herocc.school.aspencheck.*;
+import com.herocc.school.aspencheck.AspenCheck;
+import com.herocc.school.aspencheck.District;
+import com.herocc.school.aspencheck.GenericWebFetch;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -25,6 +27,17 @@ public class AspenWebFetch extends GenericWebFetch {
   public Connection.Response getClassListPage() {
     try {
       return getPage(aspenBaseUrl + "/portalClassList.do?navkey=academics.classes.list&maximized=true");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+  
+  public Connection.Response getClassInfoPage(String classId) {
+    Map<String, String> map = new HashMap<>();
+    map.put("selectedStudentOid", classId);
+    try {
+      return getPage(aspenBaseUrl + "/portalClassDetail.do?navkey=academics.classes.list.detail&maximized=true", map);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -71,7 +84,6 @@ public class AspenWebFetch extends GenericWebFetch {
       
       if (username == null || password == null) {
         AspenCheck.log.warning("Invalid Username or Password!");
-        AspenCheck.rollbar.warning(new InvalidCredentialsException("Tried to login to aspen without username / password!"));
         return null;
       }
       
@@ -88,7 +100,7 @@ public class AspenWebFetch extends GenericWebFetch {
       demCookies.putAll(mapLoggedInCookies);
       demCookies.putAll(mapLoginPageCookies);
   
-      if (responsePostLogin.statusCode() == 500) throw new InvalidCredentialsException("Username or Pass incorrect");
+      if (responsePostLogin.statusCode() == 500) AspenCheck.log.warning("Username or Pass incorrect");
       
       return responsePostLogin;
     } catch (IOException e) {
