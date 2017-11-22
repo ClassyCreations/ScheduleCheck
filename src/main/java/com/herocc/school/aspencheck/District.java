@@ -53,5 +53,7 @@ public class District extends TimestampedObject {
   private void checkCreds() {
     aspenUsername = AspenCheck.getEnvFromKey(aspenUsername);
     aspenPassword = AspenCheck.getEnvFromKey(aspenPassword);
+    
+    if (AspenCheck.isNullOrEmpty(aspenUsername) || AspenCheck.isNullOrEmpty(aspenPassword)) AspenCheck.log.warning("No aspen username or password for " + districtName);
   }
 }

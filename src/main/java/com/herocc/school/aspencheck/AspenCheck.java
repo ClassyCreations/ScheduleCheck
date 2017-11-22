@@ -58,4 +58,8 @@ public class AspenCheck {
   public static long getUnixTime() {
     return System.currentTimeMillis() / 1000;
   }
+  
+  public static boolean isNullOrEmpty(Object o) {
+	  return (o == null || o.equals(""));
+  }
 }
