@@ -42,7 +42,7 @@ public class Course {
   
   public Course getMoreInformation(AspenWebFetch webFetch) {
     try {
-      this.classInfoPage = webFetch.getClassInfoPage(id).parse().body();
+      this.classInfoPage = webFetch.getCourseInfoPage(id).parse().body();
     } catch (IOException e) {
       e.printStackTrace();
     }
