@@ -7,6 +7,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -22,6 +23,7 @@ public class Course {
   public String currentTermGrade;
   
   public Map<String, String> postedGrades;
+  public List<Assignment> assignments;
   
   public Course(Element classListRow) {
     id = classListRow.getElementsByTag("td").get(1).id().trim();
@@ -33,16 +35,10 @@ public class Course {
     currentTermGrade = classListRow.getElementsByTag("td").get(7).text().trim();
   }
   
-  public Course(Element element, Element classInfoPage) {
-    this(element);
-    this.classInfoPage = classInfoPage;
-    
-    useMoreInformation();
-  }
-  
   public Course getMoreInformation(AspenWebFetch webFetch) {
     try {
       this.classInfoPage = webFetch.getCourseInfoPage(id).parse().body();
+      this.assignments = AspenCoursesController.getAssignmentList(webFetch, this);
     } catch (IOException e) {
       e.printStackTrace();
     }

@@ -22,13 +22,14 @@ public class AspenCoursesController {
   
   @RequestMapping("/course")
   public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id") String district,
+                                                  @RequestParam(value="moreData", defaultValue="false") String moreData,
                                                   @RequestHeader(value="ASPEN_UNAME", required=false) String u,
                                                   @RequestHeader(value="ASPEN_PASS", required=false) String p){
     
     District d = AspenCheck.config.districts.get(district);
     
     if (u != null && p != null) {
-      return new ResponseEntity<>(new JSONReturn(getCourses(new AspenWebFetch(d.districtName, u, p)), new ErrorInfo()), HttpStatus.OK);
+      return new ResponseEntity<>(new JSONReturn(getCourses(new AspenWebFetch(d.districtName, u, p), moreData.equals("true")), new ErrorInfo()), HttpStatus.OK);
     } else {
       return new ResponseEntity<>(new JSONReturn(null, new ErrorInfo("Invalid Credentials", 0, "No username or password given")), HttpStatus.UNAUTHORIZED);
     }
@@ -70,13 +71,17 @@ public class AspenCoursesController {
     }
   }
   
-  public static List<Course> getCourses(AspenWebFetch a) {
+  public static List<Course> getCourses(AspenWebFetch a) { return getCourses(a, false); }
+  
+  public static List<Course> getCourses(AspenWebFetch a, boolean moreData) {
     Connection.Response classListPage = a.getCourseListPage();
     List<Course> courses = new ArrayList<>();
     if (classListPage != null) {
       try {
         for (Element classRow : classListPage.parse().body().getElementsByAttributeValueContaining("class", "listCell listRowHeight")) {
-          courses.add(new Course(classRow));
+          Course c = new Course(classRow);
+          c = moreData ? c.getMoreInformation(a) : c;
+          courses.add(c);
         }
       } catch (IOException e) {
         e.printStackTrace();
