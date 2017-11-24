@@ -2,6 +2,8 @@ package com.herocc.school.aspencheck.aspen.course;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
+import com.herocc.school.aspencheck.aspen.course.assignment.AspenCourseAssignmentController;
+import com.herocc.school.aspencheck.aspen.course.assignment.Assignment;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -38,16 +40,13 @@ public class Course {
   public Course getMoreInformation(AspenWebFetch webFetch) {
     try {
       this.classInfoPage = webFetch.getCourseInfoPage(id).parse().body();
-      this.assignments = AspenCoursesController.getAssignmentList(webFetch, this);
+      this.postedGrades = getTermGrades();
+      
+      this.assignments = AspenCourseAssignmentController.getAssignmentList(webFetch, this);
     } catch (IOException e) {
       e.printStackTrace();
     }
-    useMoreInformation();
     return this;
-  }
-  
-  private void useMoreInformation() {
-    this.postedGrades = getTermGrades();
   }
   
   private Map<String, String> getTermGrades() {

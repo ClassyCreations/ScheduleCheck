@@ -1,4 +1,4 @@
-package com.herocc.school.aspencheck.aspen.course;
+package com.herocc.school.aspencheck.aspen.course.assignment;
 
 import com.herocc.school.aspencheck.AspenCheck;
 import org.jsoup.nodes.Element;

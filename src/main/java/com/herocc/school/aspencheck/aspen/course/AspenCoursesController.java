@@ -53,24 +53,6 @@ public class AspenCoursesController {
     }
   }
   
-  @RequestMapping("/course/{course-id}/assignment")
-  public ResponseEntity<JSONReturn> serveAssignmentList(@PathVariable(value="district-id") String district,
-                                                    @PathVariable(value="course-id") String course,
-                                                    @RequestHeader(value="ASPEN_UNAME", required=false) String u,
-                                                    @RequestHeader(value="ASPEN_PASS", required=false) String p){
-    
-    District d = AspenCheck.config.districts.get(district);
-    
-    if (u != null && p != null) {
-      AspenWebFetch aspenWebFetch = new AspenWebFetch(d.districtName, u, p);
-      List<Assignment> a = getAssignmentList(aspenWebFetch, getCourse(aspenWebFetch, course));
-      if (a == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new JSONReturn(null, new ErrorInfo("j", 9, "b")));
-      return new ResponseEntity<>(new JSONReturn(a, new ErrorInfo()), HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(new JSONReturn(null, new ErrorInfo("Invalid Credentials", 0, "No username or password given")), HttpStatus.UNAUTHORIZED);
-    }
-  }
-  
   public static List<Course> getCourses(AspenWebFetch a) { return getCourses(a, false); }
   
   public static List<Course> getCourses(AspenWebFetch a, boolean moreData) {
@@ -91,29 +73,17 @@ public class AspenCoursesController {
     return courses;
   }
   
-  public static Course getCourse(AspenWebFetch a, String courseId) {
+  public static Course getCourse(AspenWebFetch a, String courseId, boolean moreData) {
     List<Course> enrolledCourses = getCourses(a);
-  
+    
     for (Course c : enrolledCourses) {
       if (c.id.equalsIgnoreCase(courseId) || c.code.equalsIgnoreCase(courseId) || c.name.equalsIgnoreCase(courseId))
-        return c.getMoreInformation(a);
+        return moreData ? c.getMoreInformation(a) : c;
     }
     return null;
   }
   
-  public static List<Assignment> getAssignmentList(AspenWebFetch a, Course course){
-    List<Assignment> assignments = new ArrayList<>();
-    Connection.Response assignmentsPage = a.getCourseAssignmentsPage(course.id);
-    
-    if (assignmentsPage != null) {
-      try {
-        for (Element assignmentRow : assignmentsPage.parse().body().getElementsByAttributeValueContaining("class", "listCell listRowHeight")) {
-          if (!assignmentRow.text().trim().contains("No matching records")) assignments.add(new Assignment(assignmentRow));
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-    return assignments;
+  public static Course getCourse(AspenWebFetch a, String courseId) {
+    return getCourse(a, courseId, true);
   }
 }
