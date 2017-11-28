@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '1.2.4'
     id 'org.springframework.boot' version '1.5.8.RELEASE'
     id 'ninja.miserable.blossom' version "1.0.1"
 }
@@ -29,16 +28,7 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
 
-artifacts {
-    archives shadowJar
-}
-
-shadowJar {
-    classifier = null
-}
-
 jar {
-    version = version + '-min'
     manifest {
         attributes(
                 'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
@@ -49,8 +39,7 @@ jar {
 }
 
 blossom {
-  def constants = 'src/main/java/' + group + '/Constants.java'
-  replaceToken '@@VERSION@@', version, constants
+  replaceToken '@@VERSION@@', version
 }
 
 task stage(type: Copy, dependsOn: [clean, build]) {
