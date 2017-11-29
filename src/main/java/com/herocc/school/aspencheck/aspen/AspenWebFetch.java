@@ -25,6 +25,15 @@ public class AspenWebFetch extends GenericWebFetch {
     this.login(username, password);
   }
   
+  public Boolean areCredsCorrect() {
+    try {
+      return getPage(aspenBaseUrl + "/home.do").statusCode() == 200;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
+  
   public Connection.Response getCourseListPage() {
     if (courseListPage != null) return courseListPage;
     try {
