@@ -6,6 +6,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,21 +21,31 @@ public class Schedule {
   public String advisoryBlock = "Z";
   public int blockOfDay = 0;
   public ArrayList<String> blockOrder = new ArrayList<>();
+  public Map<String, ArrayList<String>> dayBlockOrder = new HashMap<>();
   
   public Schedule(Document schedPage) {
     if (schedPage == null) return;
-    
     this.schedPage = schedPage;
+    
     this.day = getDay();
     this.currentClass = getCurrentClass();
     this.classInSession = isClassInSession();
     this.block = getBlock();
-    this.advisoryBlock = getAdvisoryBlock();
+    this.advisoryBlock = getAdvisoryBlock(this.day);
     this.blockOfDay = getBlockOfDay();
-    this.blockOrder = getDaySchedule();
+    this.blockOrder = getDaySchedule(this.day);
+    this.dayBlockOrder = getAllDaysSchedule();
   }
   
-  final int blocksInDay = 6;
+  public static final int blocksInDay = 6;
+  
+  private Map<String, ArrayList<String>> getAllDaysSchedule() {
+    Map<String, ArrayList<String>> daysSchedule = new HashMap<>();
+    for (int i = 1; i <= blocksInDay; i++) {
+      daysSchedule.put(String.valueOf(i), getDaySchedule(i));
+    }
+    return daysSchedule;
+  }
   
   private int getDay() {
     Elements matching = schedPage.body().getElementsByAttributeValueContaining("style", "border: solid 1px red;");
@@ -81,7 +93,7 @@ public class Schedule {
     }
   }
   
-  private ArrayList<String> getDaySchedule(){
+  private ArrayList<String> getDaySchedule(int day){
     ArrayList<String> blocks = new ArrayList<>();
     if (day == 0) return blocks;
     
@@ -95,7 +107,7 @@ public class Schedule {
     return blocks;
   }
   
-  private String getAdvisoryBlock() {
+  private String getAdvisoryBlock(int day) {
     String advisoryBlock = "Z"; // Return Z if there is no advisory
     
     Elements trs = schedPage.body().getElementsByAttributeValueContaining("class", "listHeader headerLabelBackground")
