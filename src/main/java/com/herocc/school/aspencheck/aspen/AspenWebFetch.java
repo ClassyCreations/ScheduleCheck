@@ -15,6 +15,9 @@ public class AspenWebFetch extends GenericWebFetch {
   public String username;
   public String districtName;
   
+  private Connection.Response courseListPage;
+  private Connection.Response schedulePage;
+  
   public AspenWebFetch(String dName, String username, String password) {
     this.aspenBaseUrl = "https://" + dName + ".myfollett.com/aspen";
     this.username = username;
@@ -23,8 +26,10 @@ public class AspenWebFetch extends GenericWebFetch {
   }
   
   public Connection.Response getCourseListPage() {
+    if (courseListPage != null) return courseListPage;
     try {
-      return getPage(aspenBaseUrl + "/portalClassList.do?navkey=academics.classes.list&maximized=true");
+      courseListPage = getPage(aspenBaseUrl + "/portalClassList.do?navkey=academics.classes.list&maximized=true");
+      return courseListPage;
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -54,8 +59,10 @@ public class AspenWebFetch extends GenericWebFetch {
   }
   
   public Connection.Response getSchedulePage() {
+    if (schedulePage != null) return schedulePage;
     try {
-      return getPage(aspenBaseUrl + "/studentScheduleContextList.do?navkey=myInfo.sch.list");
+      schedulePage = getPage(aspenBaseUrl + "/studentScheduleContextList.do?navkey=myInfo.sch.list");
+      return schedulePage;
     } catch (HttpStatusException e) {
       if (e.getStatusCode() == 404 || e.getStatusCode() == 500) {
         AspenCheck.log.warning("This login doesn't have a schedule page!");
