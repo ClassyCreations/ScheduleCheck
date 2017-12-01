@@ -40,8 +40,9 @@ public class Schedule {
   public static final int blocksInDay = 6;
   
   private Map<String, ArrayList<String>> getAllDaysSchedule() {
+    int totalDays = schedPage.body().getElementsByAttributeValueContaining("class", "inputGridHeader inputGridColumnHeader").size();
     Map<String, ArrayList<String>> daysSchedule = new HashMap<>();
-    for (int i = 1; i <= blocksInDay; i++) {
+    for (int i = 1; i <= totalDays; i++) {
       daysSchedule.put(String.valueOf(i), getDaySchedule(i));
     }
     return daysSchedule;
