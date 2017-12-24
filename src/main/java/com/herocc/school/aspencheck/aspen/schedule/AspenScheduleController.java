@@ -23,7 +23,6 @@ public class AspenScheduleController {
                                   @RequestHeader(value="ASPEN_PASS", required=false) String p){
     
     District d = AspenCheck.config.districts.get(district);
-    d.refresh();
     
     if (u != null && p != null) return new ResponseEntity<>(new JSONReturn(getSchedule(d.districtName, u, p), new ErrorInfo()), HttpStatus.OK);
     return new ResponseEntity<>(new JSONReturn(d.schedule, new ErrorInfo()), HttpStatus.OK);

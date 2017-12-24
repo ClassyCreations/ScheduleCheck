@@ -5,9 +5,7 @@ import com.herocc.school.aspencheck.aspen.schedule.Schedule;
 import com.herocc.school.aspencheck.calendar.CalendarController;
 import com.herocc.school.aspencheck.calendar.Event;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 import static com.herocc.school.aspencheck.GenericEventGenerator.SourceType;
@@ -30,24 +28,34 @@ public class District extends TimestampedObject {
   
   public District() {
     asOf = 0;
-    new Thread(() -> {
-      try {
-        Thread.sleep(3000);
-        checkCreds();
+    checkCreds();
+    Timer autoRefresh = new Timer();
+    autoRefresh.scheduleAtFixedRate(new TimerTask() {
+      @Override
+      public void run() {
         refresh();
-      } catch (InterruptedException ignored) {}
-    }).start();
-    // We need to use a thread here because if we didn't, Jackson wouldn't have finished serializing the object
+      }
+    }, 3000, AspenCheck.config.refreshInterval * 60); // Start after 3000 ms
   }
   
   public void refresh() {
-    if (AspenCheck.getUnixTime() > asOf + AspenCheck.config.refreshInterval) {
-      AspenCheck.log.log(Level.INFO, "Refreshing " + districtName + "'s info, " + String.valueOf(AspenCheck.getUnixTime() + " > " + asOf));
-      asOf = AspenCheck.getUnixTime();
+    AspenCheck.log.log(Level.INFO, "Refreshing " + districtName + "'s info, " + String.valueOf(AspenCheck.getUnixTime() + " > " + asOf));
+    asOf = AspenCheck.getUnixTime();
+    
+    new Thread(() -> {
+      Thread scheduleThread = new Thread(() -> AspenScheduleController.refreshSchedule(this));
+      Thread calendarThread = new Thread(() -> CalendarController.refreshEvents(this));
       
-      new Thread(() -> AspenScheduleController.refreshSchedule(this)).start();
-      new Thread(() -> CalendarController.refreshEvents(this)).start();
-    }
+      scheduleThread.start();
+      calendarThread.start();
+  
+      try {
+        scheduleThread.join();
+        calendarThread.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }).start();
   }
   
   private void checkCreds() {
