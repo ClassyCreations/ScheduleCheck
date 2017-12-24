@@ -62,4 +62,18 @@ public class AspenCheck {
   public static boolean isNullOrEmpty(Object o) {
 	  return (o == null || o.equals(""));
   }
+  
+  public static String textToCammelCase(String og, boolean lowercaseFirstLetter) {
+	  // Tweaked from https://stackoverflow.com/a/34230748/1709894. There is probably a better way to do this
+    StringBuilder sb = new StringBuilder(og);
+  
+    for (int i = 0; i < sb.length(); i++) {
+      if (sb.charAt(i) == ' ') {
+        sb.deleteCharAt(i);
+        sb.replace(i, i+1, String.valueOf(Character.toUpperCase(sb.charAt(i))));
+      }
+    }
+    if (lowercaseFirstLetter) sb.replace(0, 1, String.valueOf(Character.toLowerCase(sb.charAt(0))));
+    return sb.toString();
+  }
 }

@@ -17,6 +17,7 @@ public class AspenWebFetch extends GenericWebFetch {
   
   private Connection.Response courseListPage;
   private Connection.Response schedulePage;
+  private Connection.Response studentInfoPage;
   
   public AspenWebFetch(String dName, String username, String password) {
     this.aspenBaseUrl = "https://" + dName + ".myfollett.com/aspen";
@@ -32,6 +33,17 @@ public class AspenWebFetch extends GenericWebFetch {
       e.printStackTrace();
     }
     return false;
+  }
+  
+  public Connection.Response getStudentInfoPage() {
+    if (studentInfoPage != null) return studentInfoPage;
+    try {
+      studentInfoPage = getPage(aspenBaseUrl + "/portalStudentDetail.do?navkey=myInfo.details.detail&maximized=true");
+      return studentInfoPage;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
   
   public Connection.Response getCourseListPage() {
