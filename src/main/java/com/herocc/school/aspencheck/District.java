@@ -28,14 +28,20 @@ public class District extends TimestampedObject {
   
   public District() {
     asOf = 0;
-    checkCreds();
     Timer autoRefresh = new Timer();
-    autoRefresh.scheduleAtFixedRate(new TimerTask() {
-      @Override
-      public void run() {
-        refresh();
-      }
-    }, 3000, AspenCheck.config.refreshInterval * 60); // Start after 3000 ms
+    new Thread(() -> {
+      try {
+        Thread.sleep(3000);
+        checkCreds();
+        autoRefresh.scheduleAtFixedRate(new TimerTask() {
+          @Override
+          public void run() {
+            refresh();
+          }
+        }, 0, AspenCheck.config.refreshInterval * 1000);
+      } catch (InterruptedException ignored) {}
+    }).start();
+    // We need to use a thread here because if we didn't, Jackson wouldn't have finished serializing the object
   }
   
   public void refresh() {
