@@ -25,8 +25,11 @@ public class CalendarController {
   @RequestMapping()
   public ResponseEntity<JSONReturn> serveEvents(@PathVariable("district-id") String district) {
     District d = AspenCheck.config.districts.get(district);
-    d.refresh();
-    return new ResponseEntity<>(new JSONReturn(d.events, new ErrorInfo()), HttpStatus.OK);
+    if (d != null && d.announcementsSources.size() != 0) {
+      return new ResponseEntity<>(new JSONReturn(d.events, new ErrorInfo()), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(new JSONReturn(null, new ErrorInfo("District not configured", 0, "This district doesn't have any announcement sources configured")), HttpStatus.OK);
+    }
   }
   
   public static void refreshEvents(District d) {
