@@ -1,7 +1,5 @@
 package com.herocc.school.aspencheck.aspen.student;
 
-import com.herocc.school.aspencheck.AspenCheck;
-import com.herocc.school.aspencheck.District;
 import com.herocc.school.aspencheck.ErrorInfo;
 import com.herocc.school.aspencheck.JSONReturn;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
@@ -18,21 +16,19 @@ import java.io.IOException;
 public class AspenStudentController {
   
   @RequestMapping("student")
-  public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id") String district,
+  public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id") String districtName,
                                   @RequestHeader(value="ASPEN_UNAME", required=false) String u,
                                   @RequestHeader(value="ASPEN_PASS", required=false) String p) {
-    
-    District d = AspenCheck.config.districts.get(district);
   
     if (u != null && p != null) {
-      return new ResponseEntity<>(new JSONReturn(getStudent(d, u, p), new ErrorInfo()), HttpStatus.OK);
+      return new ResponseEntity<>(new JSONReturn(getStudent(districtName, u, p), new ErrorInfo()), HttpStatus.OK);
     } else {
       return new ResponseEntity<>(new JSONReturn(null, new ErrorInfo("Invalid Credentials", 0, "No username or password given")), HttpStatus.UNAUTHORIZED);
     }
   }
   
-  public static Student getStudent(District d, String u, String p) {
-    AspenWebFetch aspenWebFetch = new AspenWebFetch(d.districtName, u, p);
+  public static Student getStudent(String districtName, String u, String p) {
+    AspenWebFetch aspenWebFetch = new AspenWebFetch(districtName, u, p);
     Connection.Response studentPage = aspenWebFetch.getStudentInfoPage();
     if (studentPage != null) {
       try {

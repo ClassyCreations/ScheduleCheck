@@ -18,14 +18,19 @@ import java.io.IOException;
 public class AspenScheduleController {
   
   @RequestMapping("schedule")
-  public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id") String district,
+  public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id") String districtName,
                                   @RequestHeader(value="ASPEN_UNAME", required=false) String u,
                                   @RequestHeader(value="ASPEN_PASS", required=false) String p){
     
-    District d = AspenCheck.config.districts.get(district);
+    District d = AspenCheck.config.districts.get(districtName);
     
-    if (u != null && p != null) return new ResponseEntity<>(new JSONReturn(getSchedule(d.districtName, u, p), new ErrorInfo()), HttpStatus.OK);
-    return new ResponseEntity<>(new JSONReturn(d.schedule, new ErrorInfo()), HttpStatus.OK);
+    if (u != null && p != null) {
+      return new ResponseEntity<>(new JSONReturn(getSchedule(districtName, u, p), new ErrorInfo()), HttpStatus.OK);
+    } else if (d != null) {
+      return new ResponseEntity<>(new JSONReturn(d.schedule, new ErrorInfo()), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(new JSONReturn(null, new ErrorInfo("No configured district for schedule", 0, "No username or password given, and no cache configured for your district")), HttpStatus.NOT_FOUND);
+    }
   }
   
   public static void refreshSchedule(District d) {

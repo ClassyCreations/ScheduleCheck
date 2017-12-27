@@ -1,7 +1,5 @@
 package com.herocc.school.aspencheck.aspen.course.assignment;
 
-import com.herocc.school.aspencheck.AspenCheck;
-import com.herocc.school.aspencheck.District;
 import com.herocc.school.aspencheck.ErrorInfo;
 import com.herocc.school.aspencheck.JSONReturn;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
@@ -24,15 +22,13 @@ import static com.herocc.school.aspencheck.aspen.course.AspenCoursesController.g
 public class AspenCourseAssignmentController {
   
   @RequestMapping("/course/{course-id}/assignment")
-  public ResponseEntity<JSONReturn> serveAssignmentList(@PathVariable(value="district-id") String district,
+  public ResponseEntity<JSONReturn> serveAssignmentList(@PathVariable(value="district-id") String districtName,
                                                         @PathVariable(value="course-id") String course,
                                                         @RequestHeader(value="ASPEN_UNAME", required=false) String u,
                                                         @RequestHeader(value="ASPEN_PASS", required=false) String p){
     
-    District d = AspenCheck.config.districts.get(district);
-    
     if (u != null && p != null) {
-      AspenWebFetch aspenWebFetch = new AspenWebFetch(d.districtName, u, p);
+      AspenWebFetch aspenWebFetch = new AspenWebFetch(districtName, u, p);
       List<Assignment> a = getAssignmentList(aspenWebFetch, getCourse(aspenWebFetch, course, false));
       if (a == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new JSONReturn(null, new ErrorInfo("j", 9, "b")));
       return new ResponseEntity<>(new JSONReturn(a, new ErrorInfo()), HttpStatus.OK);

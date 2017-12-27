@@ -113,7 +113,7 @@ public class AspenWebFetch extends GenericWebFetch {
       
       Map<String, String> mapLoginPageCookies = loginPageResponse.cookies();
       Map<String, String> mapParams = new HashMap<>();
-      mapParams.put("deploymentId", "ma-melrose");
+      mapParams.put("deploymentId", districtName);
       mapParams.put("userEvent", "930");
       mapParams.put("username", username);
       mapParams.put("password", password);
