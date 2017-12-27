@@ -28,7 +28,7 @@ public class CalendarController {
     if (d != null && d.announcementsSources.size() != 0) {
       return new ResponseEntity<>(new JSONReturn(d.events, new ErrorInfo()), HttpStatus.OK);
     } else {
-      return new ResponseEntity<>(new JSONReturn(null, new ErrorInfo("District not configured", 0, "This district doesn't have any announcement sources configured")), HttpStatus.OK);
+      return new ResponseEntity<>(new JSONReturn(new ArrayList<>(), new ErrorInfo("District not configured", 0, "This district doesn't have any announcement sources configured")), HttpStatus.OK);
     }
   }
   
