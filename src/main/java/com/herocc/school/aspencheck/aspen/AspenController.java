@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.*;
 public class AspenController {
   
   @RequestMapping("/checkLogin")
-  public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id") String district,
+  public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id") String districtName,
                                                   @RequestHeader(value="ASPEN_UNAME") String u,
                                                   @RequestHeader(value="ASPEN_PASS") String p){
+
+
     
-    District d = AspenCheck.config.districts.get(district);
-    
-    AspenWebFetch a = new AspenWebFetch(d.districtName, u, p);
+    AspenWebFetch a = new AspenWebFetch(districtName, u, p);
     
     return new ResponseEntity<>(new JSONReturn(a.areCredsCorrect(), new ErrorInfo()), HttpStatus.OK);
   }
