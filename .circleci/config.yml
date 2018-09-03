@@ -16,4 +16,4 @@ jobs:
     - store_test_results:
         path: build/test-results
     - store_artifacts: # store the uberjar as an artifact
-        path: build/libs/*.jar
+        path: build/libs/
