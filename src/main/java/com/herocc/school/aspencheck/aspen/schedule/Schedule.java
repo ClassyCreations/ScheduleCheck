@@ -1,6 +1,8 @@
 package com.herocc.school.aspencheck.aspen.schedule;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.herocc.school.aspencheck.District;
+import com.herocc.school.aspencheck.calendar.Event;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -13,6 +15,7 @@ import java.util.regex.Pattern;
 
 public class Schedule {
   private Document schedPage;
+  private District district;
   
   public int day = 0;
   @JsonIgnore public String currentClass = "Z";
@@ -35,6 +38,11 @@ public class Schedule {
     this.blockOfDay = getBlockOfDay();
     this.blockOrder = getDaySchedule(this.day);
     this.dayBlockOrder = getAllDaysSchedule();
+  }
+  
+  public Schedule(Document schedPage, District district) {
+    this(schedPage);
+    this.district = district;
   }
   
   public static final int blocksInDay = 6;
@@ -64,6 +72,15 @@ public class Schedule {
         return dayNumber;
       }
     }
+    
+    try {
+      if (district.events != null && !district.events.isEmpty()) {
+        for (Event e : district.events) {
+          if (e.getTitle().startsWith("Day ")) return Integer.parseInt(e.getTitle().replace("Day ", ""));
+        }
+      }
+    } catch (NumberFormatException ignored) {}
+    
     return 0;
   }
   
