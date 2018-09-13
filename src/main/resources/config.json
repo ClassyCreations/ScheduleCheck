@@ -11,8 +11,8 @@
       "announcementsSources": {
         "csv": ["https://docs.google.com/spreadsheet/ccc?key=1C_Rmk0act0Q8VHdjeh0TAsmfbWtvK_P9z25U-7BJW78&output=csv"],
         "ical": [
-          "https://www.melroseschools.com/calendar-by-event-type/43/export.ics",
-          "https://calendar.google.com/calendar/ical/melroseschools.com_0iitdti0rfgbgc4un9vf8520bc@group.calendar.google.com/public/full.ics"
+          //"https://www.melroseschools.com/calendar-by-event-type/43/export.ics",
+          //"https://calendar.google.com/calendar/ical/melroseschools.com_0iitdti0rfgbgc4un9vf8520bc@group.calendar.google.com/public/full.ics"
         ]
       }
     }

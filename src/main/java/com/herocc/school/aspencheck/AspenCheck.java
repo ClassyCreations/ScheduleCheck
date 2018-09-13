@@ -1,5 +1,6 @@
 package com.herocc.school.aspencheck;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rollbar.notifier.Rollbar;
 import com.rollbar.notifier.config.Config;
@@ -41,6 +42,7 @@ public class AspenCheck {
       .lines().collect(Collectors.joining("\n"));
 	  
     ObjectMapper mapper = new ObjectMapper();
+    mapper.enable(JsonParser.Feature.ALLOW_COMMENTS);
     config = mapper.readValue(result, Configs.class);
   }
   
