@@ -112,7 +112,7 @@ public class CSVParse extends GenericEventGenerator {
       } catch (NullPointerException npe) {
         AspenCheck.log.warning("Error getting events from CSV, is it publicly readable and correctly formatted?");
         npe.printStackTrace();
-        AspenCheck.rollbar.error(npe, "Error getting events from CSV, is it publicly readable and correctly formatted?");
+        //AspenCheck.rollbar.error(npe, "Error getting events from CSV, is it publicly readable and correctly formatted?");
       }
     } catch (IOException e) {
       return events;

@@ -62,7 +62,7 @@ public class CalendarController {
       }
     } catch (IOException e) {
       e.printStackTrace();
-      AspenCheck.rollbar.error(e, "Unable to fetch iCal from " + url);
+      //AspenCheck.rollbar.error(e, "Unable to fetch iCal from " + url);
     }
     return null;
   }
