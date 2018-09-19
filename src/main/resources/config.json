@@ -15,6 +15,16 @@
           //"https://calendar.google.com/calendar/ical/melroseschools.com_0iitdti0rfgbgc4un9vf8520bc@group.calendar.google.com/public/full.ics"
         ]
       }
+    },
+    "va-yorktown": {
+      "districtName": "va-yorktown",
+      "aspenBaseUrl": "https://yorksis.ycsd.york.va.us/aspen",
+      "aspenUsername": "${YCSD_ASPEN_UNAME}",
+      "aspenPassword": "${YCSD_ASPEN_PASS}",
+      "announcementsSources": {
+        "csv": [],
+        "ical": []
+      }
     }
   }
 }

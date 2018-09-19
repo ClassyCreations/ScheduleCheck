@@ -1,6 +1,7 @@
 package com.herocc.school.aspencheck.aspen;
 
 import com.herocc.school.aspencheck.AspenCheck;
+import com.herocc.school.aspencheck.District;
 import com.herocc.school.aspencheck.GenericWebFetch;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
@@ -12,7 +13,6 @@ import java.util.Map;
 
 public class AspenWebFetch extends GenericWebFetch {
   private String aspenBaseUrl;
-  public String username;
   public String districtName;
   
   private Connection.Response courseListPage;
@@ -21,9 +21,20 @@ public class AspenWebFetch extends GenericWebFetch {
   
   public AspenWebFetch(String dName, String username, String password) {
     this.aspenBaseUrl = "https://" + dName + ".myfollett.com/aspen";
-    this.username = username;
     this.districtName = dName;
+    
+    if (AspenCheck.config.districts.containsKey(dName)) {
+      District d = AspenCheck.config.districts.get(dName);
+      aspenBaseUrl = d.aspenBaseUrl;
+    }
+    
     this.login(username, password);
+  }
+  
+  public AspenWebFetch(District district) {
+    this.aspenBaseUrl = district.aspenBaseUrl;
+    this.districtName = district.districtName;
+    this.login(district.aspenUsername, district.aspenPassword);
   }
   
   public Boolean areCredsCorrect() {
