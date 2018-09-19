@@ -62,7 +62,7 @@ public class AspenCoursesController {
         }
       } catch (IOException e) {
         e.printStackTrace();
-        AspenCheck.rollbar.error(e, "Error while parsing CourseList of " + a.districtName + "'s " + a.username);
+        AspenCheck.rollbar.error(e, "Error while parsing CourseList of user from " + a.districtName);
       }
     }
     return courses;
