@@ -71,6 +71,6 @@ public class District extends TimestampedObject {
     aspenUsername = AspenCheck.getEnvFromKey(aspenUsername);
     aspenPassword = AspenCheck.getEnvFromKey(aspenPassword);
     
-    return (AspenCheck.isNullOrEmpty(aspenUsername) || AspenCheck.isNullOrEmpty(aspenPassword));
+    return !(AspenCheck.isNullOrEmpty(aspenUsername) || AspenCheck.isNullOrEmpty(aspenPassword));
   }
 }
