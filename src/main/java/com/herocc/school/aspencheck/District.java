@@ -55,7 +55,10 @@ public class District extends TimestampedObject {
       Thread scheduleThread = new Thread(() -> AspenScheduleController.refreshSchedule(this));
       Thread calendarThread = new Thread(() -> CalendarController.refreshEvents(this));
       
-      if (checkCreds()) scheduleThread.start(); // Don't try to get the schedule if we don't have a login
+      if (checkCreds()) {
+        scheduleThread.start(); // Don't try to get the schedule if we don't have a login
+        AspenCheck.log.fine(districtName + "'s schedule not being fetched due to invalid credentials");
+      }
       calendarThread.start();
   
       try {
