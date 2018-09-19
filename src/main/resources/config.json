@@ -19,8 +19,8 @@
     "va-yorktown": {
       "districtName": "va-yorktown",
       "aspenBaseUrl": "https://yorksis.ycsd.york.va.us/aspen",
-      "aspenUsername": "${YCSD_ASPEN_UNAME}",
-      "aspenPassword": "${YCSD_ASPEN_PASS}",
+      "aspenUsername": "",
+      "aspenPassword": "",
       "announcementsSources": {
         "csv": [],
         "ical": []

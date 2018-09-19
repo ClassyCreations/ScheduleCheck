@@ -32,7 +32,10 @@ public class District extends TimestampedObject {
     new Thread(() -> {
       try {
         Thread.sleep(3000);
-        checkCreds();
+        if (checkCreds()) {
+          AspenCheck.log.warning(districtName + " doesn't have a valid aspen login!");
+          AspenCheck.rollbar.warning(districtName + " doesn't have a valid aspen login!");
+        }
         autoRefresh.scheduleAtFixedRate(new TimerTask() {
           @Override
           public void run() {
@@ -52,7 +55,7 @@ public class District extends TimestampedObject {
       Thread scheduleThread = new Thread(() -> AspenScheduleController.refreshSchedule(this));
       Thread calendarThread = new Thread(() -> CalendarController.refreshEvents(this));
       
-      scheduleThread.start();
+      if (checkCreds()) scheduleThread.start(); // Don't try to get the schedule if we don't have a login
       calendarThread.start();
   
       try {
@@ -64,10 +67,10 @@ public class District extends TimestampedObject {
     }).start();
   }
   
-  private void checkCreds() {
+  private boolean checkCreds() {
     aspenUsername = AspenCheck.getEnvFromKey(aspenUsername);
     aspenPassword = AspenCheck.getEnvFromKey(aspenPassword);
     
-    if (AspenCheck.isNullOrEmpty(aspenUsername) || AspenCheck.isNullOrEmpty(aspenPassword)) AspenCheck.log.warning("No aspen username or password for " + districtName);
+    return (AspenCheck.isNullOrEmpty(aspenUsername) || AspenCheck.isNullOrEmpty(aspenPassword));
   }
 }
