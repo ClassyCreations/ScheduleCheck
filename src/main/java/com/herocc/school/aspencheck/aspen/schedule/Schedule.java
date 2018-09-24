@@ -30,6 +30,17 @@ public class Schedule {
     if (schedPage == null) return;
     this.schedPage = schedPage;
     
+    initAllPoints();
+  }
+  
+  public Schedule(Document schedPage, District district) {
+    this(schedPage);
+    this.district = district;
+
+    initAllPoints();
+  }
+  
+  private void initAllPoints() {
     this.day = getDay();
     this.currentClass = getCurrentClass();
     this.classInSession = isClassInSession();
@@ -38,11 +49,6 @@ public class Schedule {
     this.blockOfDay = getBlockOfDay();
     this.blockOrder = getDaySchedule(this.day);
     this.dayBlockOrder = getAllDaysSchedule();
-  }
-  
-  public Schedule(Document schedPage, District district) {
-    this(schedPage);
-    this.district = district;
   }
   
   public static final int blocksInDay = 6;
@@ -60,21 +66,19 @@ public class Schedule {
     Elements matching = schedPage.body().getElementsByAttributeValueContaining("style", "border: solid 1px red;");
     try {
       matching.first().text();
-    } catch (NullPointerException e) {
-      return 0;
-    }
-    Matcher m = Pattern.compile("\\d+").matcher(matching.first().text());
-    
-    if (m.find()) {
-      String thing = m.group(0);
-      int dayNumber = Integer.parseInt(thing);
-      if (dayNumber >= 1 && dayNumber <= 7) {
-        return dayNumber;
+  
+      Matcher m = Pattern.compile("\\d+").matcher(matching.first().text());
+      if (m.find()) {
+        String thing = m.group(0);
+        int dayNumber = Integer.parseInt(thing);
+        if (dayNumber >= 1 && dayNumber <= 7) {
+          return dayNumber;
+        }
       }
-    }
+    } catch (NullPointerException ignored) {}
     
     try {
-      if (district.events != null && !district.events.isEmpty()) {
+      if (district != null && district.events != null) {
         for (Event e : district.events) {
           if (e.getTitle().startsWith("Day ")) return Integer.parseInt(e.getTitle().replace("Day ", ""));
         }

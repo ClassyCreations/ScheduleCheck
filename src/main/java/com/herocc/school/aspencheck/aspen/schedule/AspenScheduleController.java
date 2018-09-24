@@ -34,10 +34,24 @@ public class AspenScheduleController {
   }
   
   public static void refreshSchedule(District d) {
-    d.schedule = getSchedule(d.districtName, d.aspenUsername, d.aspenPassword);
+    d.schedule = getSchedule(d);
   }
   
-  public static Schedule getSchedule(String districtName, String username, String password) {
+  public static Schedule getSchedule(District d) {
+    AspenWebFetch aspenWebFetch = new AspenWebFetch(d.districtName, d.aspenUsername, d.aspenPassword);
+    Connection.Response schedulePage = aspenWebFetch.getSchedulePage();
+    if (schedulePage != null) {
+      try {
+        return new Schedule(schedulePage.parse(), d);
+      } catch (IOException e) {
+        e.printStackTrace();
+        AspenCheck.rollbar.error(e, "Error while parsing SchedulePage of " + d.districtName);
+      }
+    }
+    return null;
+  }
+  
+  private static Schedule getSchedule(String districtName, String username, String password) {
     AspenWebFetch aspenWebFetch = new AspenWebFetch(districtName, username, password);
     Connection.Response schedulePage = aspenWebFetch.getSchedulePage();
     if (schedulePage != null) {
