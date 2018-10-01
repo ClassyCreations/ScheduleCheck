@@ -32,7 +32,7 @@ public class District extends TimestampedObject {
     new Thread(() -> {
       try {
         Thread.sleep(3000);
-        if (checkCreds()) {
+        if (!checkCredsValid()) {
           AspenCheck.log.warning(districtName + " doesn't have a valid aspen login!");
           AspenCheck.rollbar.warning(districtName + " doesn't have a valid aspen login!");
         }
@@ -56,7 +56,7 @@ public class District extends TimestampedObject {
       Thread calendarThread = new Thread(() -> CalendarController.refreshEvents(this));
   
       calendarThread.start();
-      if (checkCreds()) {
+      if (checkCredsValid()) {
         scheduleThread.start(); // Don't try to get the schedule if we don't have a login
         AspenCheck.log.fine(districtName + "'s schedule not being fetched due to invalid credentials");
       }
@@ -70,7 +70,7 @@ public class District extends TimestampedObject {
     }).start();
   }
   
-  private boolean checkCreds() {
+  private boolean checkCredsValid() {
     aspenUsername = AspenCheck.getEnvFromKey(aspenUsername);
     aspenPassword = AspenCheck.getEnvFromKey(aspenPassword);
     
