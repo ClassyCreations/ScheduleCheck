@@ -51,6 +51,8 @@ public class CalendarController {
   public static Calendar getICal(String url) {
     try {
       URLConnection c = new URL(url).openConnection();
+      c.setConnectTimeout(2000);
+      c.setReadTimeout(2000);
       c.setRequestProperty("User-Agent", AspenCheck.config.webUserAgent);
       
       try (InputStream is = c.getInputStream()) {
