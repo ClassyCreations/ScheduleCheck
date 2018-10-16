@@ -1,8 +1,8 @@
 plugins {
-    id 'java'
-    id 'application'
-    id 'org.springframework.boot' version '1.5.8.RELEASE'
-    id 'ninja.miserable.blossom' version "1.0.1"
+  id 'java'
+  id 'application'
+  id 'org.springframework.boot' version '2.0.5.RELEASE'
+  id 'ninja.miserable.blossom' version "1.0.1"
 }
 
 group 'com.herocc.school.aspencheck'
@@ -12,30 +12,43 @@ sourceCompatibility = 1.8
 mainClassName = group + ".AspenCheck"
 
 repositories {
-    mavenCentral()
+  jcenter()
 }
 
 dependencies {
-    compile 'org.jsoup:jsoup:1.10.2' // Web Parser
-    compile 'org.mnode.ical4j:ical4j:2.0.2' // iCal parser
-    compile 'org.apache.commons:commons-csv:1.4' // Parsing CSV Files
-    compile 'org.springframework.boot:spring-boot-starter-web'
-    compile 'com.rollbar:rollbar-java:1.0.0-beta-3'
+  compile 'org.springframework.boot:spring-boot-dependencies:2.0.5.RELEASE'
+  compile 'org.springframework.boot:spring-boot-starter-web'
 
-    compileOnly 'org.projectlombok:lombok:1.16.18' // Lombok Library
+  compile 'org.jsoup:jsoup:1.10.2' // Web Parser
+  compile 'org.mnode.ical4j:ical4j:2.0.2' // iCal parser
+  compile 'org.apache.commons:commons-csv:1.4' // Parsing CSV Files
+  compile 'com.rollbar:rollbar-java:1.0.0-beta-3'
 
-    testCompile group: 'junit', name: 'junit', version: '4.12' // Test Suite
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+  compileOnly 'org.projectlombok:lombok:1.18.2' // Lombok Library
+
+  testCompile group: 'junit', name: 'junit', version: '4.12' // Test Suite
+  testCompile 'org.springframework.boot:spring-boot-starter-test'
+
+  components {
+    withModule('org.springframework:spring-beans') {
+      allVariants {
+        withDependencyConstraints {
+          // Need to patch constraints because snakeyaml is an optional dependency
+          it.findAll { it.name == 'snakeyaml' }.each { it.version { strictly '1.19' } }
+        }
+      }
+    }
+  }
 }
 
 jar {
-    manifest {
-        attributes(
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-                'Main-Class': mainClassName,
-                'Version': version
-        )
-    }
+  manifest {
+    attributes(
+      'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+      'Main-Class': mainClassName,
+      'Version': version
+    )
+  }
 }
 
 blossom {
