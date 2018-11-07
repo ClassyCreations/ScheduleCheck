@@ -12,6 +12,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class ICalendar extends GenericEventGenerator {
   private Calendar ical;
@@ -29,7 +30,8 @@ public class ICalendar extends GenericEventGenerator {
       Event e = new Event();
   
       e.setTitle(announcement.getProperty(Property.SUMMARY).getValue()); // Title
-      if (announcement.getProperty(Property.DESCRIPTION) != null) e.setDescription(announcement.getProperty(Property.DESCRIPTION).getValue()); // Description
+      if (announcement.getProperty(Property.DESCRIPTION) != null)
+        e.setDescription(Objects.toString(announcement.getProperty(Property.DESCRIPTION).getValue(), "")); // Description
       
       long eventStart = announcement.getStartDate().getDate().getTime() / 1000;
       long eventEnd = announcement.getEndDate().getDate().getTime() / 1000;
