@@ -1,12 +1,13 @@
 plugins {
-  id 'java'
-  id 'application'
-  id 'org.springframework.boot' version '2.0.5.RELEASE'
-  id 'ninja.miserable.blossom' version "1.0.1"
+    id 'java'
+    id 'application'
+    id 'org.springframework.boot' version '2.2.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'net.kyori.blossom' version '1.1.0'
 }
 
 group 'com.herocc.school.aspencheck'
-version '3.0-SNAPSHOT'
+version '3.1-SNAPSHOT'
 
 sourceCompatibility = 1.8
 mainClassName = group + ".AspenCheck"
@@ -16,29 +17,22 @@ repositories {
 }
 
 dependencies {
-  compile 'org.springframework.boot:spring-boot-dependencies:2.0.5.RELEASE'
-  compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.jsoup:jsoup:1.10.2' // Web Parser
+    compile 'org.mnode.ical4j:ical4j:2.0.2' // iCal parser
+    implementation 'org.apache.commons:commons-csv:1.4' // Parsing CSV Files
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.rollbar:rollbar-java:1.0.0-beta-3'
 
-  compile 'org.jsoup:jsoup:1.10.2' // Web Parser
-  compile 'org.mnode.ical4j:ical4j:2.0.2' // iCal parser
-  compile 'org.apache.commons:commons-csv:1.4' // Parsing CSV Files
-  compile 'com.rollbar:rollbar-java:1.0.0-beta-3'
+    compileOnly 'org.projectlombok:lombok:1.18.10' // Lombok Library
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
 
-  compileOnly 'org.projectlombok:lombok:1.18.2' // Lombok Library
-
-  testCompile group: 'junit', name: 'junit', version: '4.12' // Test Suite
-  testCompile 'org.springframework.boot:spring-boot-starter-test'
-
-  components {
-    withModule('org.springframework:spring-beans') {
-      allVariants {
-        withDependencyConstraints {
-          // Need to patch constraints because snakeyaml is an optional dependency
-          it.findAll { it.name == 'snakeyaml' }.each { it.version { strictly '1.19' } }
-        }
-      }
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-  }
+}
+
+test {
+  useJUnitPlatform()
 }
 
 jar {
@@ -56,7 +50,7 @@ blossom {
 }
 
 task stage(type: Copy, dependsOn: [clean, build]) {
-  from jar.archivePath
+  from jar.archiveFile
   into project.rootDir
   rename {
     'app.jar'
@@ -64,6 +58,6 @@ task stage(type: Copy, dependsOn: [clean, build]) {
 }
 stage.mustRunAfter(clean)
 
-clean << {
+clean.doLast {
   project.file('app.jar').delete()
 }
