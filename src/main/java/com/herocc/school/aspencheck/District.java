@@ -35,13 +35,15 @@ public class District extends TimestampedObject {
         if (!checkCredsValid()) {
           AspenCheck.log.warning(districtName + " doesn't have a valid aspen login!");
           AspenCheck.rollbar.warning(districtName + " doesn't have a valid aspen login!");
+        } else {
+          // Only auto-refresh district if there is a configured login
+          autoRefresh.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+              refresh();
+            }
+          }, 0, AspenCheck.config.refreshInterval * 1000);
         }
-        autoRefresh.scheduleAtFixedRate(new TimerTask() {
-          @Override
-          public void run() {
-            refresh();
-          }
-        }, 0, AspenCheck.config.refreshInterval * 1000);
       } catch (InterruptedException ignored) {}
     }).start();
     // We need to use a thread here because if we didn't, Jackson wouldn't have finished serializing the object
