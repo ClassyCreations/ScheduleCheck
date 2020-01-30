@@ -1,9 +1,9 @@
 plugins {
-    id 'java'
-    id 'application'
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id 'net.kyori.blossom' version '1.1.0'
+  id 'java'
+  id 'application'
+  id 'org.springframework.boot' version '2.2.4.RELEASE'
+  id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+  id 'net.kyori.blossom' version '1.1.0'
 }
 
 group 'com.herocc.school.aspencheck'
@@ -17,18 +17,18 @@ repositories {
 }
 
 dependencies {
-    compile 'org.jsoup:jsoup:1.10.2' // Web Parser
-    compile 'org.mnode.ical4j:ical4j:2.0.2' // iCal parser
-    implementation 'org.apache.commons:commons-csv:1.4' // Parsing CSV Files
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'com.rollbar:rollbar-java:1.0.0-beta-3'
+  compile 'org.jsoup:jsoup:1.10.2' // Web Parser
+  compile 'org.mnode.ical4j:ical4j:2.0.2' // iCal parser
+  implementation 'org.apache.commons:commons-csv:1.4' // Parsing CSV Files
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'com.rollbar:rollbar-java:1.0.0-beta-3'
 
-    compileOnly 'org.projectlombok:lombok:1.18.10' // Lombok Library
-    annotationProcessor 'org.projectlombok:lombok:1.18.10'
+  compileOnly 'org.projectlombok:lombok:1.18.10' // Lombok Library
+  annotationProcessor 'org.projectlombok:lombok:1.18.10'
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+  testImplementation('org.springframework.boot:spring-boot-starter-test') {
+    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+  }
 }
 
 test {
