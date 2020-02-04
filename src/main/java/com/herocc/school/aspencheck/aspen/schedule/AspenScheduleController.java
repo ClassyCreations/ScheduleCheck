@@ -38,7 +38,7 @@ public class AspenScheduleController {
   }
   
   public static Schedule getSchedule(District d) {
-    AspenWebFetch aspenWebFetch = new AspenWebFetch(d.districtName, d.aspenUsername, d.aspenPassword);
+    AspenWebFetch aspenWebFetch = new AspenWebFetch(d);
     Connection.Response schedulePage = aspenWebFetch.getSchedulePage();
     if (schedulePage != null) {
       try {

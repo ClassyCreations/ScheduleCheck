@@ -1,5 +1,6 @@
-package com.herocc.school.aspencheck;
+package com.herocc.school.aspencheck.parsers;
 
+import com.herocc.school.aspencheck.CSVParse;
 import com.herocc.school.aspencheck.calendar.Event;
 import org.junit.jupiter.api.Test;
 

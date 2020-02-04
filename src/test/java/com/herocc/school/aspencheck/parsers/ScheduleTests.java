@@ -1,4 +1,4 @@
-package com.herocc.school.aspencheck;
+package com.herocc.school.aspencheck.parsers;
 
 import com.herocc.school.aspencheck.aspen.schedule.Schedule;
 import org.jsoup.Jsoup;

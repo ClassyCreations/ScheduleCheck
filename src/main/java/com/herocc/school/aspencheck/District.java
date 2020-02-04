@@ -50,7 +50,7 @@ public class District extends TimestampedObject {
   }
   
   public void refresh() {
-    AspenCheck.log.log(Level.INFO, "Refreshing " + districtName + "'s info, " + String.valueOf(AspenCheck.getUnixTime() + " > " + asOf));
+    AspenCheck.log.log(Level.INFO, "Refreshing " + districtName + "'s info, " + AspenCheck.getUnixTime() + " > " + asOf);
     asOf = AspenCheck.getUnixTime();
     
     new Thread(() -> {
