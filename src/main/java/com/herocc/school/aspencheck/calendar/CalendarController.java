@@ -1,12 +1,19 @@
 package com.herocc.school.aspencheck.calendar;
 
-import com.herocc.school.aspencheck.*;
+import com.herocc.school.aspencheck.AspenCheck;
+import com.herocc.school.aspencheck.CSVParse;
+import com.herocc.school.aspencheck.District;
+import com.herocc.school.aspencheck.ErrorInfo;
+import com.herocc.school.aspencheck.GenericEventGenerator;
+import com.herocc.school.aspencheck.GenericWebFetch;
+import com.herocc.school.aspencheck.JSONReturn;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +28,8 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/{district-id}/announcements")
 public class CalendarController {
-  
-  @RequestMapping()
+
+  @GetMapping()
   public ResponseEntity<JSONReturn> serveEvents(@PathVariable("district-id") String district) {
     District d = AspenCheck.config.districts.get(district);
     if (d != null && d.announcementsSources.size() != 0) {
@@ -31,7 +38,7 @@ public class CalendarController {
       return new ResponseEntity<>(new JSONReturn(new ArrayList<>(), new ErrorInfo("District not configured", 0, "This district doesn't have any announcement sources configured")), HttpStatus.OK);
     }
   }
-  
+
   public static void refreshEvents(District d) {
     ArrayList<Event> eventList = new ArrayList<>();
     for (String url : d.announcementsSources.get(GenericEventGenerator.SourceType.ical)){
@@ -42,7 +49,7 @@ public class CalendarController {
     }
     d.events = eventList;
   }
-  
+
   /**
    * Gets a Calendar object from a given URL
    * @param url URL of the iCal File
@@ -54,7 +61,7 @@ public class CalendarController {
       c.setConnectTimeout(15000);
       c.setReadTimeout(15000);
       c.setRequestProperty("User-Agent", AspenCheck.config.webUserAgent);
-      
+
       try (InputStream is = c.getInputStream()) {
         return new CalendarBuilder().build(is);
       } catch (ParserException e) {
