@@ -9,4 +9,4 @@ If your district has a custom url, feel free to add it to the [config.json](http
 The endpoints are subject to change at any time, and should not be used in production environments.
 
 ## Endpoints
-We publish OpenAPI / Swagger data. To see our endpoints, visit the [swagger docs](https://aspencheck.herokuapp.comapi/v1/swagger-ui.html).
+We publish OpenAPI / Swagger data. To see our endpoints, visit the [swagger docs](https://aspencheck.herokuapp.com/api/v1/swagger-ui.html).
