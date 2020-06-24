@@ -5,6 +5,7 @@ import com.herocc.school.aspencheck.District;
 import com.herocc.school.aspencheck.ErrorInfo;
 import com.herocc.school.aspencheck.JSONReturn;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
+import io.swagger.v3.oas.annotations.Operation;
 import org.jsoup.Connection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.io.IOException;
 @RequestMapping("/{district-id}/aspen")
 public class AspenScheduleController {
 
+  @Operation(description = "Returns schedule information, such as day, block, etc.")
   @GetMapping("schedule")
   public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id") String districtName,
                                   @RequestHeader(value="ASPEN_UNAME", required=false) String u,

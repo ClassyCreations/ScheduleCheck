@@ -4,6 +4,7 @@ import com.herocc.school.aspencheck.ErrorInfo;
 import com.herocc.school.aspencheck.JSONReturn;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
 import com.herocc.school.aspencheck.aspen.course.Course;
+import io.swagger.v3.oas.annotations.Operation;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Element;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ import static com.herocc.school.aspencheck.aspen.course.AspenCoursesController.g
 @RequestMapping("/{district-id}/aspen")
 public class AspenCourseAssignmentController {
 
+  @Operation(description = "Gets a list of all of a course's assignments and their grades")
   @GetMapping("/course/{course-id}/assignment")
   public ResponseEntity<JSONReturn> serveAssignmentList(@PathVariable(value="district-id") String districtName,
                                                         @PathVariable(value="course-id") String course,

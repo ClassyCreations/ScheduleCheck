@@ -3,6 +3,7 @@ package com.herocc.school.aspencheck.aspen.student;
 import com.herocc.school.aspencheck.ErrorInfo;
 import com.herocc.school.aspencheck.JSONReturn;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
+import io.swagger.v3.oas.annotations.Operation;
 import org.jsoup.Connection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,11 @@ import java.io.IOException;
 @RequestMapping("/{district-id}/aspen")
 public class AspenStudentController {
 
+  @Operation(description = "Returns grade, ID, etc regarding the student")
   @GetMapping("student")
-  public ResponseEntity<JSONReturn> serveSchedule(@PathVariable(value="district-id") String districtName,
-                                  @RequestHeader(value="ASPEN_UNAME", required=false) String u,
-                                  @RequestHeader(value="ASPEN_PASS", required=false) String p) {
+  public ResponseEntity<JSONReturn> serveStudent(@PathVariable(value="district-id") String districtName,
+                                  @RequestHeader(value="ASPEN_UNAME") String u,
+                                  @RequestHeader(value="ASPEN_PASS") String p) {
 
     if (u != null && p != null) {
       return new ResponseEntity<>(new JSONReturn(getStudent(districtName, u, p), new ErrorInfo()), HttpStatus.OK);

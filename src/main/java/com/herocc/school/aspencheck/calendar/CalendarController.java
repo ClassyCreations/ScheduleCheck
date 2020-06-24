@@ -7,6 +7,7 @@ import com.herocc.school.aspencheck.ErrorInfo;
 import com.herocc.school.aspencheck.GenericEventGenerator;
 import com.herocc.school.aspencheck.GenericWebFetch;
 import com.herocc.school.aspencheck.JSONReturn;
+import io.swagger.v3.oas.annotations.Operation;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 @RequestMapping("/{district-id}/announcements")
 public class CalendarController {
 
+  @Operation(description = "Returns all announcements scheduled to run (sources gathered from config)")
   @GetMapping()
   public ResponseEntity<JSONReturn> serveEvents(@PathVariable("district-id") String district) {
     District d = AspenCheck.config.districts.get(district);
