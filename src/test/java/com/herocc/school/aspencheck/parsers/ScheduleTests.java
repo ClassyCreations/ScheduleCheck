@@ -1,51 +1,54 @@
 package com.herocc.school.aspencheck.parsers;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+
 import com.herocc.school.aspencheck.aspen.schedule.Schedule;
+import com.herocc.school.aspencheck.aspen.schedule.parsing.ScheduleDocumentParser;
+
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 public class ScheduleTests {
-	private Schedule schedule = new Schedule(Jsoup.parse(this.getClass().getClassLoader().getResourceAsStream("AspenSchedule.html"), "UTF-8", ""));
-	
+	private Schedule schedule2017 = new ScheduleDocumentParser(Jsoup.parse(this.getClass().getClassLoader().getResourceAsStream("AspenSchedule.html"), "UTF-8", "")).buildSchedule();
+  private Schedule schedule2021 = new ScheduleDocumentParser(Jsoup.parse(this.getClass().getClassLoader().getResourceAsStream("AspenSchedule2021.html"), "UTF-8", "")).buildSchedule();
+
 	public ScheduleTests() throws IOException {}
-	
+
 	@Test
-	public void expectedDay(){
-		assert schedule.day == 1;
+	public void expectedDay() {
+		assertTrue(schedule2017.day.startsWith("1"));
+    assertTrue(schedule2021.day.startsWith("Fri"));
 	}
-	
+
 	@Test
 	public void expectedBlock(){
-		assert "A".equals(schedule.block);
+		assertEquals("A", schedule2017.block);
+    assertEquals("E", schedule2021.block);
 	}
-	
+
 	@Test
 	public void expectedBlockOfDay(){
-		assert schedule.blockOfDay == 1;
+		assertEquals(1, schedule2017.blockOfDay);
 	}
-	
-	@Test
+
+	/*@Test
 	public void expectedClass() {
 		assert "228-05 ALGEBRA 2 Teacher, Math 230 A".equals(schedule.currentClass);
-	}
-	
+	}*/
+
 	@Test
 	public void expectedInSession() {
-		assert schedule.classInSession;
+		assertTrue(schedule2017.classInSession);
+    assertTrue(schedule2021.classInSession);
 	}
-	
+
 	@Test
 	public void expectedBlockSequence(){
-		ArrayList<String> dayOneOrder = new ArrayList<>();
-		dayOneOrder.add("A"); // Find a better way to do this?
-		dayOneOrder.add("B");
-		dayOneOrder.add("C");
-		dayOneOrder.add("D");
-		dayOneOrder.add("E");
-		dayOneOrder.add("F");
-		assert schedule.blockOrder.equals(dayOneOrder);
+		String[] todaysOrder2017 = new String[]{"A", "B", "C", "D", "E", "F"};
+		assertArrayEquals(todaysOrder2017, schedule2017.blockOrder.toArray());
 	}
 }
