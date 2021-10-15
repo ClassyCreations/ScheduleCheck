@@ -5,6 +5,8 @@ import com.herocc.school.aspencheck.District;
 import com.herocc.school.aspencheck.ErrorInfo;
 import com.herocc.school.aspencheck.JSONReturn;
 import com.herocc.school.aspencheck.aspen.AspenWebFetch;
+import com.herocc.school.aspencheck.aspen.schedule.parsing.ScheduleDocumentParser;
+
 import io.swagger.v3.oas.annotations.Operation;
 import org.jsoup.Connection;
 import org.springframework.http.HttpStatus;
@@ -49,7 +51,7 @@ public class AspenScheduleController {
     Connection.Response schedulePage = aspenWebFetch.getSchedulePage();
     if (schedulePage != null) {
       try {
-        return new Schedule(schedulePage.parse(), d);
+        return new ScheduleDocumentParser(schedulePage.parse(), d).buildSchedule();
       } catch (IOException e) {
         e.printStackTrace();
         AspenCheck.rollbar.error(e, "Error while parsing SchedulePage of " + d.districtName);
@@ -63,7 +65,7 @@ public class AspenScheduleController {
     Connection.Response schedulePage = aspenWebFetch.getSchedulePage();
     if (schedulePage != null) {
       try {
-        return new Schedule(schedulePage.parse());
+        return new ScheduleDocumentParser(schedulePage.parse()).buildSchedule();
       } catch (IOException e) {
         e.printStackTrace();
         AspenCheck.rollbar.error(e, "Error while parsing SchedulePage of " + districtName);
