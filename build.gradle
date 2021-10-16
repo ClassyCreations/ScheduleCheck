@@ -38,6 +38,18 @@ dependencies {
   }
 }
 
+// Allows using `java -jar`
+// TODO probably a better way to fix this (via spring?)
+jar {
+  manifest {
+    attributes(
+      'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' '),
+      'Main-Class': mainClassName,
+      'Version': archiveVersion
+    )
+  }
+}
+
 test {
   useJUnitPlatform()
 }
