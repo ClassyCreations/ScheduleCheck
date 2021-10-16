@@ -2,7 +2,7 @@ image: frekele/gradle
 
 gradle-build:
   stage: build
-  script: "gradle clean build"
+  script: "./gradlew clean build"
   artifacts:
     paths:
       - build/libs/*.jar
