@@ -59,7 +59,7 @@ blossom {
 }
 
 task stage(type: Copy, dependsOn: [clean, build]) {
-  from jar.archiveFile
+  from bootJar.archiveFile
   into project.rootDir
   rename {
     'app.jar'
