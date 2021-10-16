@@ -82,7 +82,8 @@ public class ScheduleDocumentParser {
 
       // Load the block of the day
       String blockText = cellBlock.getElementsByAttributeValueContaining("style", "font-weight: bold").text();
-      if (!blockText.isEmpty()) blockText = blockText.split(Pattern.quote("("))[0];
+      if (blockText.isEmpty()) continue; // Skip empty blocks & continue
+      blockText = blockText.split(Pattern.quote("("))[0].replaceAll("[^a-zA-Z]+", "");
       blocks.add(blockText);
       if (cellBlock.attributes().get("style").contains("border: solid 1px red;")) {
         // If this is the current block, set so
