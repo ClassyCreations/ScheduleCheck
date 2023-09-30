@@ -74,4 +74,5 @@ clean.doLast {
 
 wrapper {
   distributionType = Wrapper.DistributionType.BIN
+  gradleVersion = '8.2'
 }
