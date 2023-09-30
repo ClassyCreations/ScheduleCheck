@@ -7,9 +7,10 @@ plugins {
 }
 
 group = 'com.herocc.school.aspencheck'
-version = '3.2-SNAPSHOT'
+version = '3.3-SNAPSHOT'
 
-sourceCompatibility = 1.8
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
 mainClassName = group + ".AspenCheck"
 
 repositories {
