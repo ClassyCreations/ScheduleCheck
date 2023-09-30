@@ -11,7 +11,7 @@
       "announcementsSources": {
         "csv": ["https://docs.google.com/spreadsheet/ccc?key=1C_Rmk0act0Q8VHdjeh0TAsmfbWtvK_P9z25U-7BJW78&output=csv"],
         "ical": [
-          "https://www.melroseschools.com/calendar-by-event-type/43%2053/export.ics",
+          "https://thrillshare-cmsv2.services.thrillshare.com/api/v4/o/18555/cms/events/generate_ical?filter_ids&section_ids",
           "https://calendar.google.com/calendar/ical/melroseschools.com_0iitdti0rfgbgc4un9vf8520bc@group.calendar.google.com/public/full.ics"
         ]
       }
