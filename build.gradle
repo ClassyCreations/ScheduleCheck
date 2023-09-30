@@ -27,7 +27,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
   implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
-  implementation 'org.springdoc:springdoc-openapi-javadoc:1.5.11'
+  implementation 'org.springdoc:springdoc-openapi-javadoc:1.7.0'
 
   implementation 'com.rollbar:rollbar-java:1.7.8'
 
