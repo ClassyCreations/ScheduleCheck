@@ -97,7 +97,7 @@ public class AspenWebFetch extends GenericWebFetch {
       return schedulePage;
     } catch (HttpStatusException e) {
       if (e.getStatusCode() == 404 || e.getStatusCode() == 500) {
-        AspenCheck.log.warning("This login doesn't have a schedule page!");
+        AspenCheck.log.warning(String.format("The login for district %s doesn't have a schedule page!", this.districtName));
       } else {
         AspenCheck.log.warning("Login details incorrect, or Aspen is having issues, please try again later!");
       }
