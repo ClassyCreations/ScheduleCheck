@@ -114,7 +114,7 @@ public class AspenWebFetch extends GenericWebFetch {
   
   public Connection.Response login(String username, String password) {
     try {
-      String loginUrl = getAspenBaseUrl() + "/logon.do";
+      String loginUrl = getAspenDomain() + "/aspen-login";
       Connection.Response loginPageResponse = Jsoup.connect(loginUrl)
                       .userAgent(AspenCheck.config.webUserAgent)
                       .timeout(10 * 1000)
@@ -122,7 +122,7 @@ public class AspenWebFetch extends GenericWebFetch {
                       .execute();
       
       if (loginPageResponse.statusCode() == 404) {
-        AspenCheck.log.warning("No login page found at " + getAspenBaseUrl());
+        AspenCheck.log.warning("No login page found at " + loginUrl);
         return null;
       }
       
